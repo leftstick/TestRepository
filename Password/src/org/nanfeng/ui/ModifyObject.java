@@ -96,7 +96,7 @@ public class ModifyObject extends BaseDialog {
 		view.getControl().setLayoutData(data4);
 		view.setContentProvider(new ObjectsContentProvider());
 		view.setLabelProvider(new ObjectsLabelProvider());
-		createColumns(titles1, view);
+		createColumns(titles1, view,new int[]{150,150});
 		view.setCellModifier(new CellModifier());
 
 		Composite bottom = new Composite(main, SWT.RIGHT_TO_LEFT);
@@ -137,11 +137,11 @@ public class ModifyObject extends BaseDialog {
 		view.add(new ObjectProperty("", ""));
 	}
 
-	private void createColumns(final String[] titles, final TableViewer viewer) {
-		for (String title : titles) {
+	private void createColumns(final String[] titles, final TableViewer viewer,int[] columnswidth) {
+		for (int i=0;i<columnswidth.length;i++) {
 			TableColumn column = new TableColumn(viewer.getTable(), SWT.CENTER);
-			column.setText(title);
-			column.pack();
+			column.setText(titles[i]);
+			column.setWidth(columnswidth[i]);
 		}
 		viewer.setColumnProperties(titles);
 		CellEditor[] editors = new TextCellEditor[titles.length];

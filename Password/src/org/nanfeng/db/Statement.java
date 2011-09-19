@@ -226,10 +226,7 @@ public class Statement<E> {
 
 		key.setData(StringUtil.getBytes(primaryKey, "UTF-8"));
 		DatabaseEntry data = new DatabaseEntry();
-		E info = getByPrimaryKey(primaryKey);
-		if (info == null)
-			throw new RecordExistsException("数据表[" + table_name + "]中键["
-					+ primaryKey + "]不存在");
+		getByPrimaryKey(primaryKey);
 		bind_primary_key.objectToEntry(pojo, data);
 		OperationStatus os;
 		if (transactions != null)

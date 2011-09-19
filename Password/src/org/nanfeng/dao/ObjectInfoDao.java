@@ -11,5 +11,5 @@ public interface ObjectInfoDao {
 
 	public void delete(ObjectInfo obj);
 
-	public List<ObjectInfo> get();
+	public List<ObjectInfo> get(String userName);
 }

@@ -15,6 +15,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.nanfeng.bean.impl.UserInfo;
+import org.nanfeng.dao.UserInfoDao;
+import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
 
 public class ChangePwd extends BaseDialog {
@@ -22,6 +25,7 @@ public class ChangePwd extends BaseDialog {
 	private Text text_oldpwd;
 	private Text text_newPwd;
 	private Text text_newPwd2;
+	private UserInfoDao userinfodao;
 
 	public ChangePwd(Shell parent) {
 		super(parent);
@@ -125,9 +129,32 @@ public class ChangePwd extends BaseDialog {
 			mb.open();
 			return;
 		}
+		if (!text_newPwd2.getText().equals(text_newPwd.getText())) {
+			mb.setMessage("repeat password is not the same as new password");
+			mb.open();
+			return;
+		}
+		UserInfo user = getData("userinfo", UserInfo.class);
+		if (!text_oldpwd.getText().equals(user.getUser_pwd())) {
+			mb.setMessage("old password is not correct");
+			mb.open();
+			return;
+		}
 
-		// TODO change userpwd
-
+		if (userinfodao == null)
+			userinfodao = new UserInfoDaoImpl();
+		user.setUser_pwd(text_newPwd2.getText());
+		try {
+			userinfodao.update(user);
+		} catch (Exception e) {
+			mb.setMessage(e.getMessage());
+			mb.open();
+			return;
+		}
+		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+		mb.setText("Information");
+		mb.setMessage("change successful");
+		mb.open();
 		close();
 	}
 }

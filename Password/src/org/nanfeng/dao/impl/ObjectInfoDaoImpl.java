@@ -6,6 +6,7 @@ import org.nanfeng.bean.impl.ObjectInfo;
 import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.db.Connection;
 import org.nanfeng.db.Statement;
+import org.nanfeng.util.Context;
 import org.nanfeng.util.DataBaseConstants;
 
 public class ObjectInfoDaoImpl implements ObjectInfoDao {
@@ -34,12 +35,14 @@ public class ObjectInfoDaoImpl implements ObjectInfoDao {
 		conn.close();
 	}
 
-	public List<ObjectInfo> get() {
+	public List<ObjectInfo> get(String userName) {
 		List<ObjectInfo> list;
 		Connection<ObjectInfo> conn = Connection.createConnection(
 				DataBaseConstants.envHome, ObjectInfo.class);
 		Statement<ObjectInfo> stmt = conn.createStatement();
-		list = stmt.get();
+		Context context = new Context();
+		context.setValue("user_name", userName);
+		list = stmt.getBySecondaryKey(context);
 		conn.close();
 		return list;
 	}

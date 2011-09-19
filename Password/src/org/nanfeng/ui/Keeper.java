@@ -3,6 +3,7 @@ package org.nanfeng.ui;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -21,9 +22,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.actions.ActionGroup;
 import org.nanfeng.bean.impl.ObjectInfo;
 import org.nanfeng.bean.impl.ObjectInfo.ObjectProperty;
 import org.nanfeng.bean.impl.UserInfo;
@@ -36,11 +41,13 @@ public class Keeper extends BaseDialog {
 	private NewObject newinfo;
 	private ModifyObject modifyinfo;
 	private ChangePwd changePwd;
+	private Login login;
 
 	private TableViewer view_left;
 	private TableViewer view_right;
 	private ViewerFilter filter;
 	private Action action_modify;
+	private Action action_delete;
 	private ObjectInfoDao objectinfodao;
 
 	private UserInfo user;
@@ -53,6 +60,10 @@ public class Keeper extends BaseDialog {
 
 	protected void initContents(Composite parent) {
 		parent.getShell().setText("Password");
+		parent.setSize(700, 500);
+		parent.setLocation(Display.getCurrent().getClientArea().width / 2
+				- parent.getShell().getSize().x / 2, Display.getCurrent()
+				.getClientArea().height / 2 - parent.getSize().y / 2);
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gl = new GridLayout(1, true);
 		gl.marginHeight = 0;
@@ -82,29 +93,35 @@ public class Keeper extends BaseDialog {
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		gd.grabExcessHorizontalSpace = true;
 		gd.grabExcessVerticalSpace = true;
+		gd.widthHint = 350;
+		gd.minimumWidth = 350;
 		bottom.setLayout(gl1);
 		bottom.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		view_left = new TableViewer(bottom, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
 		String[] titles1 = { "Object name", "Description" };
-		createColumns(titles1, view_left);
+		createColumns(titles1, view_left, new int[] { 140, 200 });
 		view_left.getTable().setHeaderVisible(true);
 		view_left.getTable().setLinesVisible(true);
 		view_left.setContentProvider(new ObjectsLeftContentProvider());
 		view_left.setLabelProvider(new ObjectsLeftLabelProvider());
-		view_left.setInput(objectinfodao.get());
 		view_left.getControl().setLayoutData(gd);
+		PopMenu pm = new PopMenu();
+		pm.fillContextMenu(new MenuManager());
 
 		view_right = new TableViewer(bottom, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
 		String[] titles2 = { "Key", "Value" };
-		createColumns(titles2, view_right);
+		createColumns(titles2, view_right, new int[] { 140, 200 });
 		view_right.getTable().setHeaderVisible(true);
 		view_right.getTable().setLinesVisible(true);
 		view_right.setContentProvider(new ObjectsRightContentProvider());
 		view_right.setLabelProvider(new ObjectsRightLabelProvider());
-		view_right.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridData gd2 = new GridData(GridData.FILL_BOTH);
+		gd2.widthHint = 350;
+		gd2.minimumWidth = 350;
+		view_right.getControl().setLayoutData(gd2);
 
 		view_left.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -115,19 +132,25 @@ public class Keeper extends BaseDialog {
 							.getObjectProperties());
 					view_right.refresh();
 					action_modify.setEnabled(true);
-				} else
+					action_delete.setEnabled(true);
+				} else {
 					action_modify.setEnabled(false);
+					action_delete.setEnabled(false);
+				}
 			}
 		});
 		action_modify.setEnabled(false);
+		action_delete.setEnabled(false);
 		user = getData("userinfo", UserInfo.class);
+		view_left.setInput(objectinfodao.get(user.getUser_name()));
 	}
 
-	private void createColumns(final String[] titles, final TableViewer viewer) {
-		for (String title : titles) {
+	private void createColumns(final String[] titles, final TableViewer viewer,
+			int[] columnswidth) {
+		for (int i = 0; i < titles.length; i++) {
 			TableColumn column = new TableColumn(viewer.getTable(), SWT.CENTER);
-			column.setText(title);
-			column.pack();
+			column.setText(titles[i]);
+			column.setWidth(columnswidth[i]);
 		}
 
 	}
@@ -135,8 +158,10 @@ public class Keeper extends BaseDialog {
 	protected MenuManager createMenuManager() {
 		MenuManager main_menu = new MenuManager(null);
 		MenuManager menu_file = new MenuManager("&File");
+		MenuManager menu_option = new MenuManager("&Option");
 		MenuManager menu_help = new MenuManager("&Help");
 		main_menu.add(menu_file);
+		main_menu.add(menu_option);
 		main_menu.add(menu_help);
 		menu_file.add(new Action("&New@Ctrl+N", Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
@@ -151,9 +176,12 @@ public class Keeper extends BaseDialog {
 				}
 				newinfo.setData("userinfo", user);
 				newinfo.show(true);
-				ObjectInfo data = newinfo.getData("newObject", ObjectInfo.class);
-				((List<ObjectInfo>)view_left.getInput()).add(data);
-				view_left.refresh();
+				ObjectInfo data = newinfo
+						.getData("newObject", ObjectInfo.class);
+				if (data != null) {
+					((List<ObjectInfo>) view_left.getInput()).add(data);
+					view_left.refresh();
+				}
 			}
 		});
 		menu_file.add(action_modify = new Action("&Modify@Ctrl+M",
@@ -175,7 +203,18 @@ public class Keeper extends BaseDialog {
 				view_right.refresh();
 			}
 		});
-		menu_file.add(new Action("&ChangePwd@Ctrl+U", Action.AS_PUSH_BUTTON) {
+		menu_file.add(action_delete = new Action("&Delete@Ctrl+D",
+				Action.AS_PUSH_BUTTON) {
+			public ImageDescriptor getImageDescriptor() {
+				return ImageDescriptor.createFromURL(this.getClass()
+						.getResource("icon/delete.jpg"));
+			}
+
+			public void run() {
+				delete();
+			}
+		});
+		menu_option.add(new Action("&ChangePwd@Ctrl+U", Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
 						.getResource("icon/change.jpg"));
@@ -190,7 +229,34 @@ public class Keeper extends BaseDialog {
 			}
 		});
 		menu_file.add(new Separator());
+		menu_file.add(new Action("&Logout@Ctrl+L", Action.AS_PUSH_BUTTON) {
+			public ImageDescriptor getImageDescriptor() {
+				return ImageDescriptor.createFromURL(this.getClass()
+						.getResource("icon/logout.jpg"));
+			}
+
+			public void run() {
+				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
+						| SWT.OK | SWT.CANCEL);
+				mb.setText("Information");
+				mb.setMessage("Are you sure to logout?");
+				int res = mb.open();
+				if (res == SWT.CANCEL)
+					return;
+				if (login == null) {
+					login = new Login();
+				}
+				close();
+				login.show(true);
+			}
+		});
+		menu_file.add(new Separator());
 		menu_file.add(new Action("&Exit", Action.AS_PUSH_BUTTON) {
+			public ImageDescriptor getImageDescriptor() {
+				return ImageDescriptor.createFromURL(this.getClass()
+						.getResource("icon/exit.jpg"));
+			}
+
 			public void run() {
 				close();
 			}
@@ -212,6 +278,56 @@ public class Keeper extends BaseDialog {
 		});
 		return main_menu;
 
+	}
+
+	class PopMenu extends ActionGroup {
+		public void fillContextMenu(IMenuManager menu) {
+			MenuManager menuManager = (MenuManager) menu;
+			menuManager.add(new Action("&Delete", Action.AS_PUSH_BUTTON) {
+				public ImageDescriptor getImageDescriptor() {
+					return ImageDescriptor.createFromURL(this.getClass()
+							.getResource("icon/delete.jpg"));
+				}
+
+				public void run() {
+					delete();
+				}
+			});
+			Menu m = menuManager.createContextMenu(view_left.getTable());
+			view_left.getTable().setMenu(m);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void delete() {
+		TableItem[] items = view_left.getTable().getSelection();
+		ObjectInfo obj = null;
+		if (items != null && items.length > 0) {
+			MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
+					| SWT.OK | SWT.CANCEL);
+			mb.setText("Information");
+			mb.setMessage("Are you sure to delete?");
+			int res = mb.open();
+			if (res == SWT.CANCEL)
+				return;
+			try {
+				obj = (ObjectInfo) items[0].getData();
+				objectinfodao.delete(obj);
+			} catch (Exception e) {
+				mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+				mb.setText("Error");
+				mb.setMessage(e.getMessage());
+				mb.open();
+				return;
+			}
+			mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+			mb.setText("Information");
+			mb.setMessage("delete successful");
+			mb.open();
+			((List<ObjectInfo>) view_left.getInput()).remove(obj);
+			view_left.refresh();
+			view_right.setInput(null);
+		}
 	}
 
 	class ObjectsFilter extends ViewerFilter {
