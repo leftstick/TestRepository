@@ -1,0 +1,271 @@
+package org.nanfeng.ui;
+
+import java.util.List;
+
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
+import org.nanfeng.bean.impl.ObjectInfo;
+import org.nanfeng.bean.impl.ObjectInfo.ObjectProperty;
+import org.nanfeng.bean.impl.UserInfo;
+import org.nanfeng.dao.ObjectInfoDao;
+import org.nanfeng.dao.impl.HiloDao;
+import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
+import org.nanfeng.table.TableStructure;
+import org.nanfeng.ui.face.BaseDialog;
+
+public class NewObject extends BaseDialog {
+	private TableViewer view;
+
+	private Text text_objectName;
+	private Text text_description;
+
+	private ObjectInfoDao objectinfodao;
+
+	public NewObject(Shell parent) {
+		super(parent);
+		setShellStyle(SWT.CLOSE | SWT.APPLICATION_MODAL);
+	}
+
+	protected void initContents(Composite parent) {
+		parent.getShell().setText("Password->File->New");
+		Composite main = new Composite(parent, SWT.CENTER);
+		GridLayout gl1 = new GridLayout(2, false);
+		gl1.marginTop = 5;
+		gl1.marginBottom = 5;
+		gl1.marginLeft = 5;
+		gl1.marginRight = 5;
+		GridData data2 = new GridData(GridData.FILL_HORIZONTAL);
+		data2.widthHint = 200;
+		data2.minimumWidth = 200;
+		data2.heightHint = 20;
+		data2.minimumHeight = 20;
+		main.setLayout(gl1);
+
+		Label label_objectName = new Label(main, SWT.LEFT);
+		label_objectName.setText("Object Name:");
+		label_objectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		text_objectName = new Text(main, SWT.LEFT | SWT.BORDER);
+		text_objectName.setLayoutData(data2);
+
+		Label label_description = new Label(main, SWT.LEFT);
+		label_description.setText("Description:");
+		label_description.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		text_description = new Text(main, SWT.LEFT | SWT.BORDER | SWT.MULTI
+				| SWT.V_SCROLL);
+		GridData data3 = new GridData(GridData.FILL_HORIZONTAL);
+		data3.widthHint = 200;
+		data3.minimumWidth = 200;
+		data3.heightHint = 50;
+		data3.minimumHeight = 50;
+		text_description.setLayoutData(data3);
+
+		GridData data4 = new GridData(GridData.FILL_HORIZONTAL);
+		data4.horizontalSpan = 2;
+		data4.widthHint = 200;
+		data4.minimumWidth = 200;
+		data4.minimumHeight = 150;
+		data4.heightHint = 150;
+		view = new TableViewer(main, SWT.V_SCROLL | SWT.BORDER
+				| SWT.FULL_SELECTION);
+		String[] titles1 = { "Key", "Value" };
+		view.getTable().setHeaderVisible(true);
+		view.getTable().setLinesVisible(true);
+		view.getControl().setLayoutData(data4);
+		view.setContentProvider(new ObjectsContentProvider());
+		view.setLabelProvider(new ObjectsLabelProvider());
+		createColumns(titles1, view);
+		view.setCellModifier(new CellModifier());
+
+		Composite bottom = new Composite(main, SWT.RIGHT_TO_LEFT);
+		bottom.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+		Button button_cancel = new Button(bottom, SWT.PUSH);
+		button_cancel.setText("Cancel");
+		button_cancel.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				close();
+			}
+		});
+
+		Button button_ok = new Button(bottom, SWT.PUSH);
+		button_ok.setText("Submit");
+		button_ok.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				save();
+			}
+		});
+
+		bottom.setTabList(new Control[] { button_ok, button_cancel });
+		main.setTabList(new Control[] { text_objectName, text_description,
+				view.getControl(), bottom });
+		parent.setTabList(new Control[] { main });
+
+		GridData data5 = new GridData(GridData.FILL_HORIZONTAL);
+		data5.horizontalSpan = 2;
+		data5.widthHint = 200;
+		data5.minimumWidth = 200;
+		bottom.setLayoutData(data5);
+	}
+
+	private void createColumns(final String[] titles, final TableViewer viewer) {
+		for (String title : titles) {
+			TableColumn column = new TableColumn(viewer.getTable(), SWT.CENTER);
+			column.setText(title);
+			column.pack();
+		}
+		viewer.setColumnProperties(titles);
+		CellEditor[] editors = new TextCellEditor[titles.length];
+		for (int i = 0; i < editors.length; i++) {
+			editors[i] = new TextCellEditor(viewer.getTable());
+		}
+		viewer.setCellEditors(editors);
+		viewer.add(new ObjectProperty("", ""));
+	}
+
+	private void save() {
+		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
+		mb.setText("Error");
+		if (text_objectName.getText().trim().length() == 0) {
+			mb.setMessage("object name must not be empty");
+			mb.open();
+			return;
+		}
+		if (text_description.getText().trim().length() == 0) {
+			mb.setMessage("object description must not be empty");
+			mb.open();
+			return;
+		}
+		TableItem[] items = view.getTable().getItems();
+		for (int i = 0; i < items.length - 1; i++) {
+			ObjectProperty op = (ObjectProperty) items[i].getData();
+			if (op.key == null || op.key.trim().length() == 0
+					|| op.value == null || op.value.trim().length() == 0) {
+				mb.setMessage("object properties must not be empty");
+				mb.open();
+				return;
+			}
+		}
+		ObjectInfo obj = new ObjectInfo();
+		obj.setObject_id(HiloDao.getInstance()
+				.getMaxValue(
+						TableStructure.wrapTableStructure(ObjectInfo.class)
+								.tableName()));
+		obj.setObject_name(text_objectName.getText());
+		obj.setObject_description(text_description.getText());
+		obj.setUser_name(getData("userinfo", UserInfo.class).getUser_name());
+		for (int i = 0; i < items.length - 1; i++) {
+			ObjectProperty op = (ObjectProperty) items[i].getData();
+			obj.addProperty(op);
+		}
+		if (objectinfodao == null)
+			objectinfodao = new ObjectInfoDaoImpl();
+		try {
+			objectinfodao.save(obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+			mb.setMessage(e.getMessage());
+			mb.open();
+			return;
+		}
+		setData("newObject", obj);
+		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+		mb.setText("Information");
+		mb.setMessage("save successful");
+		mb.open();
+		close();
+	}
+
+	class ObjectsContentProvider implements IStructuredContentProvider {
+		@SuppressWarnings("unchecked")
+		public Object[] getElements(Object inputElement) {
+			List<ObjectProperty> list = null;
+			try {
+				list = (List<ObjectProperty>) inputElement;
+			} catch (Exception e) {
+				return new ObjectProperty[0];
+			}
+			return list.toArray(new ObjectProperty[list.size()]);
+		}
+
+		public void dispose() {
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		}
+	}
+
+	class ObjectsLabelProvider extends LabelProvider implements
+			ITableLabelProvider {
+		public String getColumnText(Object element, int columnIndex) {
+			if (element instanceof ObjectProperty) {
+				ObjectProperty obj = (ObjectProperty) element;
+				if (columnIndex == 0) {
+					return obj.key;
+				} else if (columnIndex == 1) {
+					return obj.value;
+				}
+			}
+			return null;
+		}
+
+		public Image getColumnImage(Object element, int columnIndex) {
+			return null;
+		}
+	}
+
+	class CellModifier implements ICellModifier {
+		public boolean canModify(Object element, String property) {
+			return true;
+		}
+
+		public Object getValue(Object element, String property) {
+			ObjectProperty entry = (ObjectProperty) element;
+			if (property.equals("Key"))
+				return entry.key;
+			else if (property.equals("Value"))
+				return entry.value;
+			return null;
+		}
+
+		public void modify(Object element, String property, Object value) {
+
+			TableItem item = (TableItem) element;
+			ObjectProperty entry = (ObjectProperty) item.getData();
+			if (property.equals("Key")) {
+				entry.key = value.toString();
+			} else if (property.equals("Value")) {
+				entry.value = value.toString();
+			}
+			view.update(entry, null);
+			TableItem[] items = view.getTable().getItems();
+			ObjectProperty op = (ObjectProperty) items[items.length - 1]
+					.getData();
+			if (op.key.trim().length() > 0 && op.value.trim().length() > 0)
+				view.add(new ObjectProperty("", ""));
+		}
+	}
+}
