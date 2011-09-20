@@ -165,10 +165,4 @@ public class Setting extends BaseDialog {
 		close();
 		keeper.show(true);
 	}
-
-	public static void main(String[] args) {
-		Setting login = new Setting();
-		login.show(true);
-	}
-
 }

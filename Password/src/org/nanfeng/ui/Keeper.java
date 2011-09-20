@@ -455,9 +455,4 @@ public class Keeper extends BaseDialog {
 	// tbm = new ToolBarManager(style);
 	// formatBar = new ToolBarContributionItem(tbm, "format");
 	// }
-
-	public static void main(String[] args) {
-		Keeper login = new Keeper();
-		login.show(true);
-	}
 }
