@@ -116,13 +116,17 @@ public class Register extends BaseDialog {
 		UserInfo user = new UserInfo();
 		user.setUser_name(text_userName.getText());
 		user.setUser_pwd(text_userPwd.getText());
+		if (userinfodao.get(user.getUser_name()) != null) {
+			mb.setMessage("User " + user.getUser_name() + " has already exists");
+			mb.open();
+			return;
+		}
 
 		try {
 			userinfodao.save(user);
 		} catch (Exception e) {
 			mb.setMessage(e.getMessage());
 			mb.open();
-			e.printStackTrace();
 			return;
 		}
 

@@ -1,7 +1,12 @@
 package org.nanfeng.ui;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -22,16 +27,19 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.actions.ActionGroup;
 import org.nanfeng.bean.impl.ObjectInfo;
 import org.nanfeng.bean.impl.ObjectInfo.ObjectProperty;
 import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ObjectUtils;
 
 public class ModifyObject extends BaseDialog {
 	private TableViewer view;
@@ -41,11 +49,14 @@ public class ModifyObject extends BaseDialog {
 
 	private ObjectInfoDao objectinfodao;
 
+	private List<ObjectProperty> newDatas;
+
 	public ModifyObject(Shell parent) {
 		super(parent);
 		setShellStyle(SWT.CLOSE | SWT.APPLICATION_MODAL);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void initContents(Composite parent) {
 		parent.getShell().setText("Password->File->Modify");
 		Composite main = new Composite(parent, SWT.CENTER);
@@ -96,7 +107,7 @@ public class ModifyObject extends BaseDialog {
 		view.getControl().setLayoutData(data4);
 		view.setContentProvider(new ObjectsContentProvider());
 		view.setLabelProvider(new ObjectsLabelProvider());
-		createColumns(titles1, view,new int[]{150,150});
+		createColumns(titles1, view, new int[] { 150, 150 });
 		view.setCellModifier(new CellModifier());
 
 		Composite bottom = new Composite(main, SWT.RIGHT_TO_LEFT);
@@ -106,6 +117,7 @@ public class ModifyObject extends BaseDialog {
 		button_cancel.setText("Cancel");
 		button_cancel.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				view.setInput(newDatas);
 				close();
 			}
 		});
@@ -133,12 +145,18 @@ public class ModifyObject extends BaseDialog {
 
 		text_objectName.setText(obj.getObject_name());
 		text_description.setText(obj.getObject_description());
-		view.setInput(obj.getObjectProperties());
-		view.add(new ObjectProperty("", ""));
+		newDatas = ObjectUtils.clone(obj.getObjectProperties());
+		view.setInput(newDatas);
+		((List<ObjectProperty>) view.getInput())
+				.add(new ObjectProperty("", ""));
+		view.refresh();
+		PopMenu pm = new PopMenu();
+		pm.fillContextMenu(new MenuManager());
 	}
 
-	private void createColumns(final String[] titles, final TableViewer viewer,int[] columnswidth) {
-		for (int i=0;i<columnswidth.length;i++) {
+	private void createColumns(final String[] titles, final TableViewer viewer,
+			int[] columnswidth) {
+		for (int i = 0; i < columnswidth.length; i++) {
 			TableColumn column = new TableColumn(viewer.getTable(), SWT.CENTER);
 			column.setText(titles[i]);
 			column.setWidth(columnswidth[i]);
@@ -161,8 +179,15 @@ public class ModifyObject extends BaseDialog {
 		}
 		obj.setObject_description(text_description.getText());
 		obj.clearProperties();
+		int searchWide = 0;
 		TableItem[] items = view.getTable().getItems();
-		for (int i = 0; i < items.length - 1; i++) {
+		ObjectProperty o = (ObjectProperty) items[items.length - 1].getData();
+		if ((o.key == null || o.key.trim().length() == 0)
+				&& (o.value == null || o.value.trim().length() == 0))
+			searchWide = items.length - 1;
+		else
+			searchWide = items.length;
+		for (int i = 0; i < searchWide; i++) {
 			ObjectProperty op = (ObjectProperty) items[i].getData();
 			if (op.key == null || op.key.trim().length() == 0
 					|| op.value == null || op.value.trim().length() == 0) {
@@ -171,7 +196,7 @@ public class ModifyObject extends BaseDialog {
 				return;
 			}
 		}
-		for (int i = 0; i < items.length - 1; i++) {
+		for (int i = 0; i < searchWide; i++) {
 			ObjectProperty op = (ObjectProperty) items[i].getData();
 			obj.addProperty(op);
 		}
@@ -190,6 +215,50 @@ public class ModifyObject extends BaseDialog {
 		mb.setMessage("update successful");
 		mb.open();
 		close();
+	}
+
+	class PopMenu extends ActionGroup {
+		public void fillContextMenu(IMenuManager menu) {
+			MenuManager menuManager = (MenuManager) menu;
+			menuManager.add(new Action("&Delete", Action.AS_PUSH_BUTTON) {
+				public ImageDescriptor getImageDescriptor() {
+					return ImageDescriptor.createFromURL(this.getClass()
+							.getResource("icon/delete.jpg"));
+				}
+
+				public void run() {
+					delete();
+				}
+			});
+			Menu m = menuManager.createContextMenu(view.getTable());
+			view.getTable().setMenu(m);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void delete() {
+		TableItem[] items = view.getTable().getSelection();
+		if (items != null && items.length > 0) {
+			MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
+					| SWT.OK | SWT.CANCEL);
+			mb.setText("Information");
+			mb.setMessage("Are you sure to delete?");
+			int res = mb.open();
+			if (res == SWT.CANCEL)
+				return;
+			if (view.getTable().getItems().length == 1)
+				return;
+			ObjectProperty op = (ObjectProperty) items[0].getData();
+			if ((op.key == null || op.key.trim().length() == 0)
+					&& (op.value == null || op.value.trim().length() == 0))
+				return;
+			((List<ObjectProperty>) view.getInput()).remove(items[0].getData());
+			mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
+			mb.setText("Information");
+			mb.setMessage("delete successful");
+			mb.open();
+			view.refresh();
+		}
 	}
 
 	class ObjectsContentProvider implements IStructuredContentProvider {
@@ -244,6 +313,7 @@ public class ModifyObject extends BaseDialog {
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		public void modify(Object element, String property, Object value) {
 
 			TableItem item = (TableItem) element;
@@ -257,8 +327,17 @@ public class ModifyObject extends BaseDialog {
 			TableItem[] items = view.getTable().getItems();
 			ObjectProperty op = (ObjectProperty) items[items.length - 1]
 					.getData();
-			if (op.key.trim().length() > 0 && op.value.trim().length() > 0)
-				view.add(new ObjectProperty("", ""));
+			if (op.key.trim().length() > 0 && op.value.trim().length() > 0) {
+				List<ObjectProperty> list = (List<ObjectProperty>) view
+						.getInput();
+				if (list == null) {
+					list = new LinkedList<ObjectProperty>();
+					view.setInput(list);
+				}
+				((List<ObjectProperty>) view.getInput())
+						.add(new ObjectProperty("", ""));
+				view.refresh();
+			}
 		}
 	}
 }

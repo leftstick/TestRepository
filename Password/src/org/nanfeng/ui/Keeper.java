@@ -192,15 +192,7 @@ public class Keeper extends BaseDialog {
 			}
 
 			public void run() {
-				if (modifyinfo == null) {
-					modifyinfo = new ModifyObject(Keeper.this.getShell());
-				}
-				modifyinfo.setData("userinfo", user);
-				modifyinfo.setData("object", view_left.getTable()
-						.getSelection()[0].getData());
-				modifyinfo.show(true);
-				view_left.refresh();
-				view_right.refresh();
+				modify();
 			}
 		});
 		menu_file.add(action_delete = new Action("&Delete@Ctrl+D",
@@ -293,6 +285,16 @@ public class Keeper extends BaseDialog {
 					delete();
 				}
 			});
+			menuManager.add(new Action("&Modify", Action.AS_PUSH_BUTTON) {
+				public ImageDescriptor getImageDescriptor() {
+					return ImageDescriptor.createFromURL(this.getClass()
+							.getResource("icon/modify.jpg"));
+				}
+
+				public void run() {
+					modify();
+				}
+			});
 			Menu m = menuManager.createContextMenu(view_left.getTable());
 			view_left.getTable().setMenu(m);
 		}
@@ -328,6 +330,18 @@ public class Keeper extends BaseDialog {
 			view_left.refresh();
 			view_right.setInput(null);
 		}
+	}
+
+	private void modify() {
+		if (modifyinfo == null) {
+			modifyinfo = new ModifyObject(Keeper.this.getShell());
+		}
+		modifyinfo.setData("userinfo", user);
+		modifyinfo.setData("object", view_left.getTable()
+				.getSelection()[0].getData());
+		modifyinfo.show(true);
+		view_left.refresh();
+		view_right.refresh();
 	}
 
 	class ObjectsFilter extends ViewerFilter {
