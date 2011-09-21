@@ -33,7 +33,7 @@ public class ChangePwd extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->File->ChangePwd");
+		parent.getShell().setText("Password->Option->ChangePwd");
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 15;

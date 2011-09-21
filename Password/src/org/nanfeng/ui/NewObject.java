@@ -113,6 +113,7 @@ public class NewObject extends BaseDialog {
 		button_cancel.setText("Cancel");
 		button_cancel.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
+				setData("newObject", null);
 				close();
 			}
 		});

@@ -1,6 +1,8 @@
 package org.nanfeng.ui;
 
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -15,14 +17,21 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableColumn;
@@ -49,6 +58,17 @@ public class Keeper extends BaseDialog {
 	private Action action_modify;
 	private Action action_delete;
 	private ObjectInfoDao objectinfodao;
+	private final int index1 = 1;
+	private final int index2 = 2;
+	private final Sorter OBJECT_NAME_ASC = new Sorter(index1);
+	private final Sorter OBJECT_NAME_DESC = new Sorter(-index1);
+	private final Sorter DESCRIPTION_ASC = new Sorter(index2);
+	private final Sorter DESCRIPTION_DESC = new Sorter(-index2);
+
+	private final Sorter KEY_ASC = new Sorter(index1);
+	private final Sorter KEY_DESC = new Sorter(-index1);
+	private final Sorter VALUE_ASC = new Sorter(index2);
+	private final Sorter VALUE_DESC = new Sorter(-index2);
 
 	private UserInfo user;
 
@@ -81,8 +101,11 @@ public class Keeper extends BaseDialog {
 				view_left.addFilter(filter);
 			}
 		});
+		Group group = new Group(main, SWT.NONE);
+		group.setText("Information");
+		group.setLayout(new GridLayout(1, true));
 
-		Composite bottom = new Composite(main, SWT.NONE);
+		SashForm sash = new SashForm(group, SWT.HORIZONTAL);
 		GridLayout gl1 = new GridLayout(2, false);
 		gl1.marginHeight = 0;
 		gl1.marginWidth = 0;
@@ -91,37 +114,69 @@ public class Keeper extends BaseDialog {
 		gl1.marginLeft = 0;
 		gl1.marginRight = 0;
 		GridData gd = new GridData(GridData.FILL_BOTH);
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
 		gd.widthHint = 350;
 		gd.minimumWidth = 350;
-		bottom.setLayout(gl1);
-		bottom.setLayoutData(new GridData(GridData.FILL_BOTH));
+		sash.setLayout(gl1);
+		sash.setLayoutData(new GridData(GridData.FILL_BOTH));
+		group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		view_left = new TableViewer(bottom, SWT.V_SCROLL | SWT.BORDER
+		view_left = new TableViewer(sash, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
 		String[] titles1 = { "Object name", "Description" };
-		createColumns(titles1, view_left, new int[] { 140, 200 });
+		createColumns(titles1, view_left, new int[] { 130, 200 });
+		view_left.getTable().getColumns()[0]
+				.addSelectionListener(new SelectionAdapter() {
+					boolean asc = true;
+
+					public void widgetSelected(SelectionEvent e) {
+						view_left.setSorter(asc ? OBJECT_NAME_ASC
+								: OBJECT_NAME_DESC);
+						asc = !asc;
+					}
+				});
+		view_left.getTable().getColumns()[1]
+				.addSelectionListener(new SelectionAdapter() {
+					boolean asc = true;
+
+					public void widgetSelected(SelectionEvent e) {
+						view_left.setSorter(asc ? DESCRIPTION_ASC
+								: DESCRIPTION_DESC);
+						asc = !asc;
+					}
+				});
 		view_left.getTable().setHeaderVisible(true);
 		view_left.getTable().setLinesVisible(true);
 		view_left.setContentProvider(new ObjectsLeftContentProvider());
 		view_left.setLabelProvider(new ObjectsLeftLabelProvider());
 		view_left.getControl().setLayoutData(gd);
+		view_left.getTable().addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				final int width = view_left.getTable().getSize().x;
+				final int width_1 = width / 2;
+				view_left.getTable().getColumns()[0].setWidth(width_1);
+				view_left.getTable().getColumns()[1].setWidth(width_1);
+			}
+		});
 		PopMenu pm = new PopMenu();
 		pm.fillContextMenu(new MenuManager());
 
-		view_right = new TableViewer(bottom, SWT.V_SCROLL | SWT.BORDER
+		view_right = new TableViewer(sash, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
 		String[] titles2 = { "Key", "Value" };
-		createColumns(titles2, view_right, new int[] { 140, 200 });
+		createColumns(titles2, view_right, new int[] { 130, 200 });
 		view_right.getTable().setHeaderVisible(true);
 		view_right.getTable().setLinesVisible(true);
 		view_right.setContentProvider(new ObjectsRightContentProvider());
 		view_right.setLabelProvider(new ObjectsRightLabelProvider());
-		GridData gd2 = new GridData(GridData.FILL_BOTH);
-		gd2.widthHint = 350;
-		gd2.minimumWidth = 350;
-		view_right.getControl().setLayoutData(gd2);
+		view_right.getControl().setLayoutData(gd);
+		view_right.getTable().addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				final int width = view_right.getTable().getSize().x;
+				final int width_1 = width / 2;
+				view_right.getTable().getColumns()[0].setWidth(width_1);
+				view_right.getTable().getColumns()[1].setWidth(width_1);
+			}
+		});
 
 		view_left.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -139,6 +194,24 @@ public class Keeper extends BaseDialog {
 				}
 			}
 		});
+		view_right.getTable().getColumns()[0]
+				.addSelectionListener(new SelectionAdapter() {
+					boolean asc = true;
+
+					public void widgetSelected(SelectionEvent e) {
+						view_right.setSorter(asc ? KEY_ASC : KEY_DESC);
+						asc = !asc;
+					}
+				});
+		view_right.getTable().getColumns()[1]
+				.addSelectionListener(new SelectionAdapter() {
+					boolean asc = true;
+
+					public void widgetSelected(SelectionEvent e) {
+						view_right.setSorter(asc ? VALUE_ASC : VALUE_DESC);
+						asc = !asc;
+					}
+				});
 		action_modify.setEnabled(false);
 		action_delete.setEnabled(false);
 		user = getData("userinfo", UserInfo.class);
@@ -152,7 +225,6 @@ public class Keeper extends BaseDialog {
 			column.setText(titles[i]);
 			column.setWidth(columnswidth[i]);
 		}
-
 	}
 
 	protected MenuManager createMenuManager() {
@@ -337,8 +409,8 @@ public class Keeper extends BaseDialog {
 			modifyinfo = new ModifyObject(Keeper.this.getShell());
 		}
 		modifyinfo.setData("userinfo", user);
-		modifyinfo.setData("object", view_left.getTable()
-				.getSelection()[0].getData());
+		modifyinfo.setData("object",
+				view_left.getTable().getSelection()[0].getData());
 		modifyinfo.show(true);
 		view_left.refresh();
 		view_right.refresh();
@@ -435,6 +507,75 @@ public class Keeper extends BaseDialog {
 
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
+		}
+	}
+
+	class Sorter extends ViewerSorter {
+		Collator comp = Collator.getInstance(Locale.CHINA);
+		private int sortType;
+
+		Sorter(int sortType) {
+			this.sortType = sortType;
+
+		}
+
+		public int compare(Viewer viewer, Object e1, Object e2) {
+			if (e1 instanceof ObjectInfo) {
+				ObjectInfo o1 = (ObjectInfo) e1;
+				ObjectInfo o2 = (ObjectInfo) e2;
+
+				switch (sortType) {
+				case index1: {
+					String l1 = o1.getObject_name();
+					String l2 = o2.getObject_name();
+					return comp.compare(l1, l2);
+				}
+				case -index1: {
+					String l1 = o1.getObject_name();
+					String l2 = o2.getObject_name();
+					return comp.compare(l2, l1);
+				}
+				case index2: {
+					String s1 = o1.getObject_description();
+					String s2 = o2.getObject_description();
+					return comp.compare(s1, s2);
+				}
+				case -index2: {
+					String s1 = o1.getObject_description();
+					String s2 = o2.getObject_description();
+					return comp.compare(s2, s1);
+				}
+				}
+			} else if (e1 instanceof ObjectProperty) {
+
+				ObjectProperty o1 = (ObjectProperty) e1;
+				ObjectProperty o2 = (ObjectProperty) e2;
+
+				switch (sortType) {
+				case index1: {
+					String l1 = o1.key;
+					String l2 = o2.key;
+					return comp.compare(l1, l2);
+				}
+				case -index1: {
+					String l1 = o1.key;
+					String l2 = o2.key;
+					return comp.compare(l2, l1);
+				}
+				case index2: {
+					String s1 = o1.value;
+					String s2 = o2.value;
+					return comp.compare(s1, s2);
+				}
+				case -index2: {
+					String s1 = o1.value;
+					String s2 = o2.value;
+					return comp.compare(s2, s1);
+				}
+				}
+
+			}
+			return 0;
 		}
 	}
 
