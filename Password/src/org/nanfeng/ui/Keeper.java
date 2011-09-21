@@ -24,6 +24,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -34,6 +36,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -155,6 +158,10 @@ public class Keeper extends BaseDialog {
 				final int width_1 = width / 2;
 				view_left.getTable().getColumns()[0].setWidth(width_1);
 				view_left.getTable().getColumns()[1].setWidth(width_1);
+			}
+		});
+		view_left.getTable().addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
 			}
 		});
 		PopMenu pm = new PopMenu();
@@ -347,26 +354,8 @@ public class Keeper extends BaseDialog {
 	class PopMenu extends ActionGroup {
 		public void fillContextMenu(IMenuManager menu) {
 			MenuManager menuManager = (MenuManager) menu;
-			menuManager.add(new Action("&Delete", Action.AS_PUSH_BUTTON) {
-				public ImageDescriptor getImageDescriptor() {
-					return ImageDescriptor.createFromURL(this.getClass()
-							.getResource("icon/delete.jpg"));
-				}
-
-				public void run() {
-					delete();
-				}
-			});
-			menuManager.add(new Action("&Modify", Action.AS_PUSH_BUTTON) {
-				public ImageDescriptor getImageDescriptor() {
-					return ImageDescriptor.createFromURL(this.getClass()
-							.getResource("icon/modify.jpg"));
-				}
-
-				public void run() {
-					modify();
-				}
-			});
+			menuManager.add(action_delete);
+			menuManager.add(action_modify);
 			Menu m = menuManager.createContextMenu(view_left.getTable());
 			view_left.getTable().setMenu(m);
 		}
