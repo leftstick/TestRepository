@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -29,6 +30,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -77,6 +79,7 @@ public class Keeper extends BaseDialog {
 	public Keeper() {
 		super(null);
 		addMenuBar();
+		addStatusLine();
 		objectinfodao = new ObjectInfoDaoImpl();
 	}
 
@@ -87,13 +90,10 @@ public class Keeper extends BaseDialog {
 				- parent.getShell().getSize().x / 2, Display.getCurrent()
 				.getClientArea().height / 2 - parent.getSize().y / 2);
 		Composite main = new Composite(parent, SWT.NONE);
-		GridLayout gl = new GridLayout(1, true);
-		gl.marginHeight = 0;
-		gl.marginWidth = 0;
-		main.setLayout(gl);
+		main.setLayout(new GridLayout(1, true));
 
 		filter = null;
-		final Text text_search = new Text(main, SWT.LEFT);
+		final Text text_search = new Text(main, SWT.LEFT | SWT.BORDER);
 		text_search.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		text_search.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -108,17 +108,7 @@ public class Keeper extends BaseDialog {
 		group.setLayout(new GridLayout(1, true));
 
 		SashForm sash = new SashForm(group, SWT.HORIZONTAL);
-		GridLayout gl1 = new GridLayout(2, false);
-		gl1.marginHeight = 0;
-		gl1.marginWidth = 0;
-		gl1.horizontalSpacing = 0;
-		gl1.verticalSpacing = 0;
-		gl1.marginLeft = 0;
-		gl1.marginRight = 0;
-		GridData gd = new GridData(GridData.FILL_BOTH);
-		gd.widthHint = 350;
-		gd.minimumWidth = 350;
-		sash.setLayout(gl1);
+		sash.setLayout(new GridLayout(2, false));
 		sash.setLayoutData(new GridData(GridData.FILL_BOTH));
 		group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -136,6 +126,24 @@ public class Keeper extends BaseDialog {
 						asc = !asc;
 					}
 				});
+		view_left.getTable().getColumns()[0]
+				.addControlListener(new ControlAdapter() {
+					public void controlResized(ControlEvent e) {
+						TableColumn tc = (TableColumn) e.getSource();
+						final int width = view_left.getTable().getSize().x;
+						view_left.getTable().getColumns()[1].setWidth(width
+								- tc.getWidth());
+					}
+				});
+		view_left.getTable().getColumns()[1]
+				.addControlListener(new ControlAdapter() {
+					public void controlResized(ControlEvent e) {
+						TableColumn tc = (TableColumn) e.getSource();
+						final int width = view_left.getTable().getSize().x;
+						view_left.getTable().getColumns()[0].setWidth(width
+								- tc.getWidth());
+					}
+				});
 		view_left.getTable().getColumns()[1]
 				.addSelectionListener(new SelectionAdapter() {
 					boolean asc = true;
@@ -150,7 +158,7 @@ public class Keeper extends BaseDialog {
 		view_left.getTable().setLinesVisible(true);
 		view_left.setContentProvider(new ObjectsLeftContentProvider());
 		view_left.setLabelProvider(new ObjectsLeftLabelProvider());
-		view_left.getControl().setLayoutData(gd);
+		view_left.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
 		view_left.getTable().addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				final int width = view_left.getTable().getSize().x;
@@ -161,6 +169,12 @@ public class Keeper extends BaseDialog {
 		});
 		view_left.getTable().addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
+				TableItem item = view_left.getTable().getItem(
+						new Point(e.x, e.y));
+				if (item == null) {
+					setModifyAndDelete(false);
+				} else
+					setModifyAndDelete(true);
 			}
 		});
 		PopMenu pm = new PopMenu();
@@ -174,7 +188,7 @@ public class Keeper extends BaseDialog {
 		view_right.getTable().setLinesVisible(true);
 		view_right.setContentProvider(new ObjectsRightContentProvider());
 		view_right.setLabelProvider(new ObjectsRightLabelProvider());
-		view_right.getControl().setLayoutData(gd);
+		view_right.getControl().setLayoutData(new GridData(GridData.FILL_BOTH));
 		view_right.getTable().addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				final int width = view_right.getTable().getSize().x;
@@ -192,12 +206,9 @@ public class Keeper extends BaseDialog {
 					view_right.setInput(((ObjectInfo) item.getData())
 							.getObjectProperties());
 					view_right.refresh();
-					action_modify.setEnabled(true);
-					action_delete.setEnabled(true);
-				} else {
-					action_modify.setEnabled(false);
-					action_delete.setEnabled(false);
-				}
+					setModifyAndDelete(true);
+				} else
+					setModifyAndDelete(false);
 			}
 		});
 		view_right.getTable().getColumns()[0]
@@ -218,10 +229,38 @@ public class Keeper extends BaseDialog {
 						asc = !asc;
 					}
 				});
-		action_modify.setEnabled(false);
-		action_delete.setEnabled(false);
+		view_right.getTable().getColumns()[0]
+				.addControlListener(new ControlAdapter() {
+					public void controlResized(ControlEvent e) {
+						TableColumn tc = (TableColumn) e.getSource();
+						final int width = view_right.getTable().getSize().x;
+						view_right.getTable().getColumns()[1].setWidth(width
+								- tc.getWidth());
+					}
+				});
+		view_right.getTable().getColumns()[1]
+				.addControlListener(new ControlAdapter() {
+					public void controlResized(ControlEvent e) {
+						TableColumn tc = (TableColumn) e.getSource();
+						final int width = view_right.getTable().getSize().x;
+						view_right.getTable().getColumns()[0].setWidth(width
+								- tc.getWidth());
+					}
+				});
+		setModifyAndDelete(false);
 		user = getData("userinfo", UserInfo.class);
 		view_left.setInput(objectinfodao.get(user.getUser_name()));
+
+		getStatusLineManager().setMessage(
+				new Image(null, this.getClass().getResourceAsStream(
+						"icon/online.jpg")), user.getUser_name());
+	}
+
+	private void setModifyAndDelete(boolean boo) {
+		action_modify.setEnabled(boo);
+		action_delete.setEnabled(boo);
+		if (!boo)
+			view_left.getTable().deselectAll();
 	}
 
 	private void createColumns(final String[] titles, final TableViewer viewer,
@@ -328,7 +367,13 @@ public class Keeper extends BaseDialog {
 			}
 
 			public void run() {
-				close();
+				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
+						| SWT.OK | SWT.CANCEL);
+				mb.setText("Information");
+				mb.setMessage("Are you sure to exit?");
+				int o = mb.open();
+				if (o == SWT.OK)
+					close();
 			}
 		});
 
@@ -353,8 +398,8 @@ public class Keeper extends BaseDialog {
 	class PopMenu extends ActionGroup {
 		public void fillContextMenu(IMenuManager menu) {
 			MenuManager menuManager = (MenuManager) menu;
-			menuManager.add(action_delete);
 			menuManager.add(action_modify);
+			menuManager.add(action_delete);
 			Menu m = menuManager.createContextMenu(view_left.getTable());
 			view_left.getTable().setMenu(m);
 		}
@@ -567,21 +612,12 @@ public class Keeper extends BaseDialog {
 		}
 	}
 
-	// protected CoolBarManager createCoolBarManager(int style) {
-	// CoolBarManager coolBar = new CoolBarManager(style);
-	// createCoolBars(style);
-	// coolBar.add(fileBar);
-	// coolBar.add(editBar);
-	// coolBar.add(formatBar);
-	// return coolBar;
-	// }
-	//
-	// private void createCoolBars(int style) {
-	// ToolBarManager tbm = new ToolBarManager(style);
-	// fileBar = new ToolBarContributionItem(tbm, "file");
-	// tbm = new ToolBarManager(style);
-	// editBar = new ToolBarContributionItem(tbm, "edit");
-	// tbm = new ToolBarManager(style);
-	// formatBar = new ToolBarContributionItem(tbm, "format");
-	// }
+	protected StatusLineManager createStatusLineManager() {
+		StatusLineManager slm = new StatusLineManager();
+		return slm;
+	}
+
+	protected StatusLineManager getStatusLineManager() {
+		return super.getStatusLineManager();
+	}
 }

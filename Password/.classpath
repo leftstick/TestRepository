@@ -18,6 +18,6 @@
 			<attribute name="javadoc_location" value="jar:file:/D:/综合/学习资料/编程资料/Apache/Library/commons-io-2.0.1/commons-io-2.0.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="var" path="BERKELEY_HOME/je-4.1.7/je-4.1.7/lib/je-4.1.7.jar" sourcepath="/BERKELEY_HOME/je-4.1.7/je-4.1.7/src"/>
+	<classpathentry kind="var" path="BERKELEY_HOME/je-4.1.10/lib/je-4.1.10.jar" sourcepath="/BERKELEY_HOME/je-4.1.7/je-4.1.7/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -32,7 +32,7 @@ public class About extends BaseDialog {
 		sb.append("Software: Password Keeper\n");
 		sb.append("Author: ZuoHao\n");
 		sb.append("Version: 1.0\n");
-		sb.append("Update time: 2011-09-14 16:05\n");
+		sb.append("Update time: 2011-09-22 21:15\n");
 		text.setText(sb.toString());
 		// text.setLayoutData();
 

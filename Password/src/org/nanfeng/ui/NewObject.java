@@ -16,6 +16,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -25,6 +27,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
@@ -49,13 +52,21 @@ public class NewObject extends BaseDialog {
 
 	private ObjectInfoDao objectinfodao;
 
+	private Shell p;
 	public NewObject(Shell parent) {
 		super(parent);
+		p = parent;
 		setShellStyle(SWT.CLOSE | SWT.APPLICATION_MODAL);
 	}
 
 	protected void initContents(Composite parent) {
 		parent.getShell().setText("Password->File->New");
+		parent.setSize(350, 370);
+		parent.setLocation(
+				(Display.getCurrent().getClientArea().width - p.getBounds().width)
+						/ 4 + p.getBounds().x,
+				(Display.getCurrent().getClientArea().height - p.getBounds().height)
+						/ 4 + p.getBounds().y);
 		Composite main = new Composite(parent, SWT.CENTER);
 		GridLayout gl1 = new GridLayout(2, false);
 		gl1.marginTop = 5;
@@ -85,8 +96,8 @@ public class NewObject extends BaseDialog {
 		GridData data3 = new GridData(GridData.FILL_HORIZONTAL);
 		data3.widthHint = 200;
 		data3.minimumWidth = 200;
-		data3.heightHint = 50;
-		data3.minimumHeight = 50;
+		data3.heightHint = 60;
+		data3.minimumHeight = 60;
 		text_description.setLayoutData(data3);
 
 		GridData data4 = new GridData(GridData.FILL_HORIZONTAL);
@@ -103,9 +114,34 @@ public class NewObject extends BaseDialog {
 		view.getControl().setLayoutData(data4);
 		view.setContentProvider(new ObjectsContentProvider());
 		view.setLabelProvider(new ObjectsLabelProvider());
-		createColumns(titles1, view, new int[] { 150, 150 });
+		createColumns(titles1, view, new int[] { 175, 175 });
 		view.setCellModifier(new CellModifier());
-
+		view.getTable().getColumns()[0]
+				.addControlListener(new ControlAdapter() {
+					public void controlResized(ControlEvent e) {
+						TableColumn tc = (TableColumn) e.getSource();
+						final int width = view.getTable().getSize().x;
+						view.getTable().getColumns()[1].setWidth(width
+								- tc.getWidth());
+					}
+				});
+		view.getTable().getColumns()[1]
+				.addControlListener(new ControlAdapter() {
+					public void controlResized(ControlEvent e) {
+						TableColumn tc = (TableColumn) e.getSource();
+						final int width = view.getTable().getSize().x;
+						view.getTable().getColumns()[0].setWidth(width
+								- tc.getWidth());
+					}
+				});
+		view.getTable().addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				TableColumn[] columns = view.getTable().getColumns();
+				for (TableColumn cl : columns) {
+					cl.setWidth(view.getTable().getSize().x / 2);
+				}
+			}
+		});
 		Composite bottom = new Composite(main, SWT.RIGHT_TO_LEFT);
 		bottom.setLayout(new RowLayout(SWT.HORIZONTAL));
 
