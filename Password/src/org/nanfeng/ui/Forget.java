@@ -19,6 +19,7 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class Forget extends BaseDialog {
 	private Text text_userName;
@@ -32,21 +33,23 @@ public class Forget extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->Forget");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 15;
 		main.setLayout(gridLayout);
 
 		Label label_note = new Label(main, SWT.LEFT);
-		label_note
-				.setText("Note:You have to write the correct answer to get your password back");
+		label_note.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".note"));
 		GridData data1 = new GridData(GridData.FILL_HORIZONTAL);
 		data1.horizontalSpan = 2;
 		label_note.setLayoutData(data1);
 
 		Label label_useName = new Label(main, SWT.LEFT);
-		label_useName.setText("User Name:");
+		label_useName.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_name"));
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
 		data.minimumWidth = 100;
@@ -67,16 +70,21 @@ public class Forget extends BaseDialog {
 		});
 
 		Label label_question = new Label(main, SWT.LEFT);
-		label_question.setText("Question:");
+		label_question.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".question"));
 		label_question.setLayoutData(data);
 		combo_question = new Combo(main, SWT.FLAT | SWT.BORDER | SWT.READ_ONLY);
 		combo_question.setLayoutData(data2);
-		combo_question.setItems(new String[] { "Where were you born?",
-				"When were you born?", "What is your father's name?",
-				"What is your mother's name?" });
+		String[] questions = new String[4];
+		for (int i = 0; i < questions.length; i++) {
+			questions[i] = ResourceUtil.instance().getString(
+					simpleClassName + ".question_" + (i + 1));
+		}
+		combo_question.setItems(questions);
 
 		Label label_answer = new Label(main, SWT.LEFT);
-		label_answer.setText("Answer:");
+		label_answer.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".answer"));
 		label_answer.setLayoutData(data);
 		text_answer = new Text(main, SWT.LEFT | SWT.BORDER);
 		text_answer.setLayoutData(data2);
@@ -97,7 +105,8 @@ public class Forget extends BaseDialog {
 		composite_buttons1.setLayoutData(data3);
 
 		Button button_get = new Button(composite_buttons1, SWT.PUSH);
-		button_get.setText("Get");
+		button_get.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".get"));
 		button_get.setLayoutData(new RowData(50, 25));
 		button_get.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -106,7 +115,8 @@ public class Forget extends BaseDialog {
 		});
 
 		Button button_exit = new Button(composite_buttons1, SWT.PUSH);
-		button_exit.setText("Cancel");
+		button_exit.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".cancel"));
 		button_exit.setLayoutData(new RowData(50, 25));
 		button_exit.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -118,21 +128,24 @@ public class Forget extends BaseDialog {
 
 	private void get() {
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText("Error");
+		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_userName.getText().length() == 0) {
-			mb.setMessage("user name must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.username.empty"));
 			mb.open();
 			return;
 		}
 		if (combo_question.getSelectionIndex() == -1
 				|| combo_question.getItem(combo_question.getSelectionIndex())
 						.length() == 0) {
-			mb.setMessage("user question must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.question.empty"));
 			mb.open();
 			return;
 		}
 		if (text_answer.getText().length() == 0) {
-			mb.setMessage("user answer must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.answer.empty"));
 			mb.open();
 			return;
 		}
@@ -147,20 +160,29 @@ public class Forget extends BaseDialog {
 			mb.open();
 			return;
 		}
+		if (user == null) {
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.user.notfound"));
+			mb.open();
+			return;
+		}
 		if (!combo_question.getItem(combo_question.getSelectionIndex()).equals(
 				user.getQuestion())) {
-			mb.setMessage("wrong question");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.question.error"));
 			mb.open();
 			return;
 		}
 		if (!text_answer.getText().equals(user.getAnswer())) {
-			mb.setMessage("wrong answer");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.answer.error"));
 			mb.open();
 			return;
 		}
 		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-		mb.setText("Information");
-		mb.setMessage("Password: " + user.getUser_pwd());
+		mb.setText(ResourceUtil.instance().getString("common.information"));
+		mb.setMessage(ResourceUtil.instance().getString("common.pwd")
+				+ user.getUser_pwd());
 		mb.open();
 
 	}

@@ -19,6 +19,7 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class Login extends BaseDialog {
 	private Register register;
@@ -33,13 +34,15 @@ public class Login extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->Login");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 15;
 		main.setLayout(gridLayout);
 		Label label_useName = new Label(main, SWT.LEFT);
-		label_useName.setText("User Name:");
+		label_useName.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_name"));
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
 		data.minimumWidth = 100;
@@ -58,7 +61,8 @@ public class Login extends BaseDialog {
 		});
 
 		Label label_usePwd = new Label(main, SWT.LEFT);
-		label_usePwd.setText("User Password:");
+		label_usePwd.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_pwd"));
 		label_usePwd.setLayoutData(data);
 		text_userPwd = new Text(main, SWT.BORDER | SWT.PASSWORD);
 		text_userPwd.setLayoutData(data2);
@@ -79,7 +83,8 @@ public class Login extends BaseDialog {
 		composite_buttons1.setLayoutData(data3);
 
 		Button button_exit = new Button(composite_buttons1, SWT.PUSH);
-		button_exit.setText("Exit");
+		button_exit.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".exit"));
 		button_exit.setLayoutData(new RowData(60, 25));
 		button_exit.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -88,7 +93,8 @@ public class Login extends BaseDialog {
 		});
 
 		Button button_login = new Button(composite_buttons1, SWT.PUSH);
-		button_login.setText("Login");
+		button_login.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".login"));
 		button_login.setLayoutData(new RowData(60, 25));
 		button_login.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -104,7 +110,8 @@ public class Login extends BaseDialog {
 		composite_buttons2.setLayoutData(data3);
 
 		Button button_forget = new Button(composite_buttons2, SWT.PUSH);
-		button_forget.setText("Forget");
+		button_forget.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".forget"));
 		button_forget.setLayoutData(new RowData(60, 25));
 		button_forget.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -118,7 +125,8 @@ public class Login extends BaseDialog {
 		});
 
 		Button button_regist = new Button(composite_buttons2, SWT.PUSH);
-		button_regist.setText("Register");
+		button_regist.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".register"));
 		button_regist.setLayoutData(new RowData(60, 25));
 		button_regist.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -140,14 +148,16 @@ public class Login extends BaseDialog {
 	private void login() {
 
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText("Error");
+		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_userName.getText().trim().length() == 0) {
-			mb.setMessage("User Name must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.username.empty"));
 			mb.open();
 			return;
 		}
 		if (text_userPwd.getText().length() == 0) {
-			mb.setMessage("User Pwd must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.userpwd.empty"));
 			mb.open();
 			return;
 		}
@@ -155,12 +165,14 @@ public class Login extends BaseDialog {
 			userdao = new UserInfoDaoImpl();
 		UserInfo user = userdao.get(text_userName.getText());
 		if (user == null) {
-			mb.setMessage("User doesn't exists");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.user.notfound"));
 			mb.open();
 			return;
 		}
 		if (!user.getUser_pwd().equals(text_userPwd.getText())) {
-			mb.setMessage("User password is not correct");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.userpwd.notcorrect"));
 			mb.open();
 			return;
 		}

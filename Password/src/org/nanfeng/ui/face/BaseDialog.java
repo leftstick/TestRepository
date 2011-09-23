@@ -12,10 +12,12 @@ import org.eclipse.swt.widgets.Shell;
 public abstract class BaseDialog extends ApplicationWindow implements IDialog {
 
 	private Map<String, Object> context;
+	protected final String simpleClassName;
 
 	public BaseDialog(Shell parentShell) {
 		super(parentShell);
 		context = new HashMap<String, Object>();
+		simpleClassName = getClass().getSimpleName();
 	}
 
 	public void setData(String key, Object obj) {
@@ -42,7 +44,8 @@ public abstract class BaseDialog extends ApplicationWindow implements IDialog {
 
 	protected Control createContents(Composite parent) {
 		parent.getShell().setImage(
-				new Image(null, this.getClass().getResourceAsStream("icon/password.jpg")));
+				new Image(null, this.getClass().getResourceAsStream(
+						"icon/password.jpg")));
 		initContents(parent);
 		return parent;
 	}

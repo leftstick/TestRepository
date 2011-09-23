@@ -43,6 +43,7 @@ import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.dao.impl.HiloDao;
 import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class NewObject extends BaseDialog {
 	private TableViewer view;
@@ -53,6 +54,7 @@ public class NewObject extends BaseDialog {
 	private ObjectInfoDao objectinfodao;
 
 	private Shell p;
+
 	public NewObject(Shell parent) {
 		super(parent);
 		p = parent;
@@ -60,7 +62,8 @@ public class NewObject extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->File->New");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		parent.setSize(350, 370);
 		parent.setLocation(
 				(Display.getCurrent().getClientArea().width - p.getBounds().width)
@@ -81,14 +84,16 @@ public class NewObject extends BaseDialog {
 		main.setLayout(gl1);
 
 		Label label_objectName = new Label(main, SWT.LEFT);
-		label_objectName.setText("Object Name:");
+		label_objectName.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".objname"));
 		label_objectName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		text_objectName = new Text(main, SWT.LEFT | SWT.BORDER);
 		text_objectName.setLayoutData(data2);
 
 		Label label_description = new Label(main, SWT.LEFT);
-		label_description.setText("Description:");
+		label_description.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".description"));
 		label_description.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		text_description = new Text(main, SWT.LEFT | SWT.BORDER | SWT.MULTI
@@ -108,7 +113,9 @@ public class NewObject extends BaseDialog {
 		data4.heightHint = 150;
 		view = new TableViewer(main, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
-		String[] titles1 = { "Key", "Value" };
+		String[] titles1 = {
+				ResourceUtil.instance().getString(simpleClassName + ".key"),
+				ResourceUtil.instance().getString(simpleClassName + ".value") };
 		view.getTable().setHeaderVisible(true);
 		view.getTable().setLinesVisible(true);
 		view.getControl().setLayoutData(data4);
@@ -146,7 +153,8 @@ public class NewObject extends BaseDialog {
 		bottom.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		Button button_cancel = new Button(bottom, SWT.PUSH);
-		button_cancel.setText("Cancel");
+		button_cancel.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".cancel"));
 		button_cancel.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				setData("newObject", null);
@@ -155,7 +163,8 @@ public class NewObject extends BaseDialog {
 		});
 
 		Button button_ok = new Button(bottom, SWT.PUSH);
-		button_ok.setText("Submit");
+		button_ok.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".submit"));
 		button_ok.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				save();
@@ -180,16 +189,20 @@ public class NewObject extends BaseDialog {
 	class PopMenu extends ActionGroup {
 		public void fillContextMenu(IMenuManager menu) {
 			MenuManager menuManager = (MenuManager) menu;
-			menuManager.add(new Action("&Delete", Action.AS_PUSH_BUTTON) {
-				public ImageDescriptor getImageDescriptor() {
-					return ImageDescriptor.createFromURL(this.getClass()
-							.getResource("icon/delete.jpg"));
-				}
+			menuManager
+					.add(new Action("&"
+							+ ResourceUtil.instance().getString(
+									simpleClassName + ".delete"),
+							Action.AS_PUSH_BUTTON) {
+						public ImageDescriptor getImageDescriptor() {
+							return ImageDescriptor.createFromURL(this
+									.getClass().getResource("icon/delete.jpg"));
+						}
 
-				public void run() {
-					delete();
-				}
-			});
+						public void run() {
+							delete();
+						}
+					});
 			Menu m = menuManager.createContextMenu(view.getTable());
 			view.getTable().setMenu(m);
 		}
@@ -201,8 +214,9 @@ public class NewObject extends BaseDialog {
 		if (items != null && items.length > 0) {
 			MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
 					| SWT.OK | SWT.CANCEL);
-			mb.setText("Information");
-			mb.setMessage("Are you sure to delete?");
+			mb.setText(ResourceUtil.instance().getString("common.information"));
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".delete.notify"));
 			int res = mb.open();
 			if (res == SWT.CANCEL)
 				return;
@@ -214,8 +228,9 @@ public class NewObject extends BaseDialog {
 				return;
 			((List<ObjectProperty>) view.getInput()).remove(items[0].getData());
 			mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-			mb.setText("Information");
-			mb.setMessage("delete successful");
+			mb.setText(ResourceUtil.instance().getString("common.information"));
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.delete.successful"));
 			mb.open();
 			view.refresh();
 		}
@@ -248,14 +263,16 @@ public class NewObject extends BaseDialog {
 
 	private void save() {
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText("Error");
+		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_objectName.getText().trim().length() == 0) {
-			mb.setMessage("object name must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".objname.empty"));
 			mb.open();
 			return;
 		}
 		if (text_description.getText().trim().length() == 0) {
-			mb.setMessage("object description must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".objdesc.empty"));
 			mb.open();
 			return;
 		}
@@ -272,7 +289,8 @@ public class NewObject extends BaseDialog {
 			ObjectProperty op = (ObjectProperty) items[i].getData();
 			if (op.key == null || op.key.trim().length() == 0
 					|| op.value == null || op.value.trim().length() == 0) {
-				mb.setMessage("object properties must not be empty");
+				mb.setMessage(ResourceUtil.instance().getString(
+						simpleClassName + ".objpro.empty"));
 				mb.open();
 				return;
 			}
@@ -286,6 +304,12 @@ public class NewObject extends BaseDialog {
 			ObjectProperty op = (ObjectProperty) items[i].getData();
 			obj.addProperty(op);
 		}
+		if (obj.getObjectProperties().isEmpty()) {
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".objpro.empty"));
+			mb.open();
+			return;
+		}
 		if (objectinfodao == null)
 			objectinfodao = new ObjectInfoDaoImpl();
 		try {
@@ -298,8 +322,9 @@ public class NewObject extends BaseDialog {
 		}
 		setData("newObject", obj);
 		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-		mb.setText("Information");
-		mb.setMessage("save successful");
+		mb.setText(ResourceUtil.instance().getString("common.information"));
+		mb.setMessage(ResourceUtil.instance().getString(
+				"common.save.successful"));
 		mb.open();
 		close();
 	}
@@ -349,9 +374,11 @@ public class NewObject extends BaseDialog {
 
 		public Object getValue(Object element, String property) {
 			ObjectProperty entry = (ObjectProperty) element;
-			if (property.equals("Key"))
+			if (property.equals(ResourceUtil.instance().getString(
+					simpleClassName + ".key")))
 				return entry.key;
-			else if (property.equals("Value"))
+			else if (property.equals(ResourceUtil.instance().getString(
+					simpleClassName + ".value")))
 				return entry.value;
 			return null;
 		}
@@ -361,9 +388,11 @@ public class NewObject extends BaseDialog {
 
 			TableItem item = (TableItem) element;
 			ObjectProperty entry = (ObjectProperty) item.getData();
-			if (property.equals("Key")) {
+			if (property.equals(ResourceUtil.instance().getString(
+					simpleClassName + ".key"))) {
 				entry.key = value.toString();
-			} else if (property.equals("Value")) {
+			} else if (property.equals(ResourceUtil.instance().getString(
+					simpleClassName + ".value"))) {
 				entry.value = value.toString();
 			}
 			view.update(entry, null);

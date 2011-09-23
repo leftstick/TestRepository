@@ -48,6 +48,7 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class Keeper extends BaseDialog {
 	private About about;
@@ -61,6 +62,8 @@ public class Keeper extends BaseDialog {
 	private ViewerFilter filter;
 	private Action action_modify;
 	private Action action_delete;
+	private Action action_chinese;
+	private Action action_english;
 	private ObjectInfoDao objectinfodao;
 	private final int index1 = 1;
 	private final int index2 = 2;
@@ -84,7 +87,8 @@ public class Keeper extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		parent.setSize(700, 500);
 		parent.setLocation(Display.getCurrent().getClientArea().width / 2
 				- parent.getShell().getSize().x / 2, Display.getCurrent()
@@ -104,7 +108,8 @@ public class Keeper extends BaseDialog {
 			}
 		});
 		Group group = new Group(main, SWT.NONE);
-		group.setText("Information");
+		group.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".group"));
 		group.setLayout(new GridLayout(1, true));
 
 		SashForm sash = new SashForm(group, SWT.HORIZONTAL);
@@ -114,7 +119,10 @@ public class Keeper extends BaseDialog {
 
 		view_left = new TableViewer(sash, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
-		String[] titles1 = { "Object name", "Description" };
+		String[] titles1 = {
+				ResourceUtil.instance().getString(simpleClassName + ".objname"),
+				ResourceUtil.instance().getString(
+						simpleClassName + ".description") };
 		createColumns(titles1, view_left, new int[] { 130, 200 });
 		view_left.getTable().getColumns()[0]
 				.addSelectionListener(new SelectionAdapter() {
@@ -182,7 +190,9 @@ public class Keeper extends BaseDialog {
 
 		view_right = new TableViewer(sash, SWT.V_SCROLL | SWT.BORDER
 				| SWT.FULL_SELECTION);
-		String[] titles2 = { "Key", "Value" };
+		String[] titles2 = {
+				ResourceUtil.instance().getString(simpleClassName + ".key"),
+				ResourceUtil.instance().getString(simpleClassName + ".value") };
 		createColumns(titles2, view_right, new int[] { 130, 200 });
 		view_right.getTable().setHeaderVisible(true);
 		view_right.getTable().setLinesVisible(true);
@@ -274,13 +284,23 @@ public class Keeper extends BaseDialog {
 
 	protected MenuManager createMenuManager() {
 		MenuManager main_menu = new MenuManager(null);
-		MenuManager menu_file = new MenuManager("&File");
-		MenuManager menu_option = new MenuManager("&Option");
-		MenuManager menu_help = new MenuManager("&Help");
+		MenuManager menu_file = new MenuManager("&"
+				+ ResourceUtil.instance().getString(simpleClassName + ".file"));
+		MenuManager menu_option = new MenuManager("&"
+				+ ResourceUtil.instance()
+						.getString(simpleClassName + ".option"));
+		MenuManager menu_language = new MenuManager("&"
+				+ ResourceUtil.instance().getString(
+						simpleClassName + ".language"));
+		MenuManager menu_help = new MenuManager("&"
+				+ ResourceUtil.instance().getString(simpleClassName + ".help"));
 		main_menu.add(menu_file);
 		main_menu.add(menu_option);
+		main_menu.add(menu_language);
 		main_menu.add(menu_help);
-		menu_file.add(new Action("&New@Ctrl+N", Action.AS_PUSH_BUTTON) {
+		menu_file.add(new Action("&"
+				+ ResourceUtil.instance().getString(simpleClassName + ".new")
+				+ "@Ctrl+N", Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
 						.getResource("icon/add.jpg"));
@@ -301,7 +321,9 @@ public class Keeper extends BaseDialog {
 				}
 			}
 		});
-		menu_file.add(action_modify = new Action("&Modify@Ctrl+M",
+		menu_file.add(action_modify = new Action("&"
+				+ ResourceUtil.instance()
+						.getString(simpleClassName + ".modify") + "@Ctrl+M",
 				Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
@@ -312,7 +334,9 @@ public class Keeper extends BaseDialog {
 				modify();
 			}
 		});
-		menu_file.add(action_delete = new Action("&Delete@Ctrl+D",
+		menu_file.add(action_delete = new Action("&"
+				+ ResourceUtil.instance()
+						.getString(simpleClassName + ".delete") + "@Ctrl+D",
 				Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
@@ -323,7 +347,10 @@ public class Keeper extends BaseDialog {
 				delete();
 			}
 		});
-		menu_option.add(new Action("&ChangePwd@Ctrl+U", Action.AS_PUSH_BUTTON) {
+		menu_option.add(new Action("&"
+				+ ResourceUtil.instance().getString(
+						simpleClassName + ".changepwd") + "@Ctrl+U",
+				Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
 						.getResource("icon/change.jpg"));
@@ -337,8 +364,61 @@ public class Keeper extends BaseDialog {
 				changePwd.show(true);
 			}
 		});
+		menu_language.add(action_chinese = new Action("&"
+				+ ResourceUtil.instance().getString(
+						simpleClassName + ".chinese"), Action.AS_CHECK_BOX) {
+
+			public void run() {
+				ResourceUtil.instance().modifyLanguageConfig(Locale.CHINESE);
+				action_english.setChecked(false);
+				action_chinese.setChecked(true);
+				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
+						| SWT.OK | SWT.CANCEL);
+				mb.setText(ResourceUtil.instance().getString(
+						"common.information"));
+				mb.setMessage(ResourceUtil.instance().getString(
+						simpleClassName + ".note.change.language"));
+				int o = mb.open();
+				if (o == SWT.OK) {
+					ResourceUtil.instance().refreshCache();
+					close();
+					if (login == null) {
+						login = new Login();
+					}
+					login.show(true);
+				}
+			}
+		});
+		menu_language.add(action_english = new Action("&"
+				+ ResourceUtil.instance().getString(
+						simpleClassName + ".english"), Action.AS_CHECK_BOX) {
+			public void run() {
+				ResourceUtil.instance().modifyLanguageConfig(Locale.ENGLISH);
+				action_chinese.setChecked(false);
+				action_english.setChecked(true);
+				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
+						| SWT.OK | SWT.CANCEL);
+				mb.setText(ResourceUtil.instance().getString(
+						"common.information"));
+				mb.setMessage(ResourceUtil.instance().getString(
+						simpleClassName + ".note.change.language"));
+				int o = mb.open();
+				if (o == SWT.OK) {
+					ResourceUtil.instance().refreshCache();
+					close();
+					if (login == null) {
+						login = new Login();
+					}
+					login.show(true);
+				}
+			}
+		});
+		setLanguageCheck();
 		menu_file.add(new Separator());
-		menu_file.add(new Action("&Logout@Ctrl+L", Action.AS_PUSH_BUTTON) {
+		menu_file.add(new Action("&"
+				+ ResourceUtil.instance()
+						.getString(simpleClassName + ".logout") + "@Ctrl+L",
+				Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
 						.getResource("icon/logout.jpg"));
@@ -347,20 +427,27 @@ public class Keeper extends BaseDialog {
 			public void run() {
 				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
 						| SWT.OK | SWT.CANCEL);
-				mb.setText("Information");
-				mb.setMessage("Are you sure to logout?");
+				mb.setText(ResourceUtil.instance().getString(
+						"common.information"));
+				mb.setMessage(ResourceUtil.instance().getString(
+						simpleClassName + ".logout.notify"));
 				int res = mb.open();
 				if (res == SWT.CANCEL)
 					return;
 				if (login == null) {
 					login = new Login();
 				}
+				if (ResourceUtil.instance().getCurrentLanguage() != ResourceUtil
+						.instance().getDBLanguage())
+					ResourceUtil.instance().refreshCache();
 				close();
 				login.show(true);
 			}
 		});
 		menu_file.add(new Separator());
-		menu_file.add(new Action("&Exit", Action.AS_PUSH_BUTTON) {
+		menu_file.add(new Action("&"
+				+ ResourceUtil.instance().getString(simpleClassName + ".exit"),
+				Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
 						.getResource("icon/exit.jpg"));
@@ -369,15 +456,21 @@ public class Keeper extends BaseDialog {
 			public void run() {
 				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
 						| SWT.OK | SWT.CANCEL);
-				mb.setText("Information");
-				mb.setMessage("Are you sure to exit?");
+				mb.setText(ResourceUtil.instance().getString(
+						"common.information"));
+				mb.setMessage(ResourceUtil.instance().getString(
+						simpleClassName + ".exit.notify"));
 				int o = mb.open();
 				if (o == SWT.OK)
 					close();
 			}
 		});
 
-		menu_help.add(new Action("&About", Action.AS_PUSH_BUTTON) {
+		menu_help.add(new Action(
+				"&"
+						+ ResourceUtil.instance().getString(
+								simpleClassName + ".about"),
+				Action.AS_PUSH_BUTTON) {
 			public ImageDescriptor getImageDescriptor() {
 				return ImageDescriptor.createFromURL(this.getClass()
 						.getResource("icon/about.jpg"));
@@ -393,6 +486,13 @@ public class Keeper extends BaseDialog {
 		});
 		return main_menu;
 
+	}
+
+	private void setLanguageCheck() {
+		if (ResourceUtil.instance().getCurrentLanguage() == Locale.CHINESE)
+			action_chinese.setChecked(true);
+		else if (ResourceUtil.instance().getCurrentLanguage() == Locale.ENGLISH)
+			action_english.setChecked(true);
 	}
 
 	class PopMenu extends ActionGroup {
@@ -412,8 +512,9 @@ public class Keeper extends BaseDialog {
 		if (items != null && items.length > 0) {
 			MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
 					| SWT.OK | SWT.CANCEL);
-			mb.setText("Information");
-			mb.setMessage("Are you sure to delete?");
+			mb.setText(ResourceUtil.instance().getString("common.information"));
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".delete.notify"));
 			int res = mb.open();
 			if (res == SWT.CANCEL)
 				return;
@@ -422,14 +523,15 @@ public class Keeper extends BaseDialog {
 				objectinfodao.delete(obj);
 			} catch (Exception e) {
 				mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-				mb.setText("Error");
+				mb.setText(ResourceUtil.instance().getString("common.error"));
 				mb.setMessage(e.getMessage());
 				mb.open();
 				return;
 			}
 			mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-			mb.setText("Information");
-			mb.setMessage("delete successful");
+			mb.setText(ResourceUtil.instance().getString("common.information"));
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.delete.successful"));
 			mb.open();
 			((List<ObjectInfo>) view_left.getInput()).remove(obj);
 			view_left.refresh();

@@ -18,6 +18,7 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class Register extends BaseDialog {
 
@@ -32,13 +33,15 @@ public class Register extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->Register");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 15;
 		main.setLayout(gridLayout);
 		Label label_useName = new Label(main, SWT.LEFT);
-		label_useName.setText("User Name:");
+		label_useName.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_name"));
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
 		data.minimumWidth = 100;
@@ -57,7 +60,8 @@ public class Register extends BaseDialog {
 		});
 
 		Label label_usePwd = new Label(main, SWT.LEFT);
-		label_usePwd.setText("User Password:");
+		label_usePwd.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_pwd"));
 		label_usePwd.setLayoutData(data);
 		text_userPwd = new Text(main, SWT.BORDER | SWT.PASSWORD);
 		text_userPwd.setLayoutData(data2);
@@ -78,7 +82,8 @@ public class Register extends BaseDialog {
 		composite_buttons1.setLayoutData(data3);
 
 		Button button_register = new Button(composite_buttons1, SWT.PUSH);
-		button_register.setText("Register");
+		button_register.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".register"));
 		button_register.setLayoutData(new RowData(60, 25));
 		button_register.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -87,7 +92,8 @@ public class Register extends BaseDialog {
 		});
 
 		Button button_cancel = new Button(composite_buttons1, SWT.PUSH);
-		button_cancel.setText("Cancel");
+		button_cancel.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".cancel"));
 		button_cancel.setLayoutData(new RowData(60, 25));
 		button_cancel.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -99,14 +105,17 @@ public class Register extends BaseDialog {
 
 	private void register() {
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText("Error");
+		mb.setText(ResourceUtil.instance().getString(
+		"common.error"));
 		if (text_userName.getText().trim().length() == 0) {
-			mb.setMessage("User Name must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.username.empty"));
 			mb.open();
 			return;
 		}
 		if (text_userPwd.getText().length() == 0) {
-			mb.setMessage("User Pwd must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.userpwd.empty"));
 			mb.open();
 			return;
 		}
@@ -117,7 +126,8 @@ public class Register extends BaseDialog {
 		user.setUser_name(text_userName.getText());
 		user.setUser_pwd(text_userPwd.getText());
 		if (userinfodao.get(user.getUser_name()) != null) {
-			mb.setMessage("User " + user.getUser_name() + " has already exists");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.user.exists"));
 			mb.open();
 			return;
 		}

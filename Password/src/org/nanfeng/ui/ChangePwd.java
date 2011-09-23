@@ -19,6 +19,7 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class ChangePwd extends BaseDialog {
 
@@ -33,14 +34,16 @@ public class ChangePwd extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->Option->ChangePwd");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 15;
 		main.setLayout(gridLayout);
 
 		Label label_oldpwd = new Label(main, SWT.LEFT);
-		label_oldpwd.setText("Old password:");
+		label_oldpwd.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".oldpwd"));
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 150;
 		data.minimumWidth = 150;
@@ -59,7 +62,8 @@ public class ChangePwd extends BaseDialog {
 		});
 
 		Label label_newPwd = new Label(main, SWT.LEFT);
-		label_newPwd.setText("New password:");
+		label_newPwd.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".newpwd"));
 		label_newPwd.setLayoutData(data);
 		text_newPwd = new Text(main, SWT.BORDER | SWT.PASSWORD);
 		text_newPwd.setLayoutData(data2);
@@ -72,7 +76,8 @@ public class ChangePwd extends BaseDialog {
 		});
 
 		Label label_newPwd2 = new Label(main, SWT.LEFT);
-		label_newPwd2.setText("Repeat new password:");
+		label_newPwd2.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".reppwd"));
 		label_newPwd2.setLayoutData(data);
 		text_newPwd2 = new Text(main, SWT.BORDER | SWT.PASSWORD);
 		text_newPwd2.setLayoutData(data2);
@@ -93,7 +98,8 @@ public class ChangePwd extends BaseDialog {
 		composite_buttons1.setLayoutData(data3);
 
 		Button button_change = new Button(composite_buttons1, SWT.PUSH);
-		button_change.setText("Submit");
+		button_change.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".submit"));
 		button_change.setLayoutData(new RowData(50, 25));
 		button_change.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -102,7 +108,8 @@ public class ChangePwd extends BaseDialog {
 		});
 
 		Button button_cancel = new Button(composite_buttons1, SWT.PUSH);
-		button_cancel.setText("Cancel");
+		button_cancel.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".cancel"));
 		button_cancel.setLayoutData(new RowData(50, 25));
 		button_cancel.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -113,30 +120,35 @@ public class ChangePwd extends BaseDialog {
 
 	private void change() {
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText("Error");
+		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_oldpwd.getText().trim().length() == 0) {
-			mb.setMessage("old password must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".oldpwd.empty"));
 			mb.open();
 			return;
 		}
 		if (text_newPwd.getText().length() == 0) {
-			mb.setMessage("new password must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".newpwd.empty"));
 			mb.open();
 			return;
 		}
 		if (text_newPwd2.getText().length() == 0) {
-			mb.setMessage("repeat password must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".repnewpwd.empty"));
 			mb.open();
 			return;
 		}
 		if (!text_newPwd2.getText().equals(text_newPwd.getText())) {
-			mb.setMessage("repeat password is not the same as new password");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".oldnew.not.same"));
 			mb.open();
 			return;
 		}
 		UserInfo user = getData("userinfo", UserInfo.class);
 		if (!text_oldpwd.getText().equals(user.getUser_pwd())) {
-			mb.setMessage("old password is not correct");
+			mb.setMessage(ResourceUtil.instance().getString(
+					simpleClassName + ".oldpwd.not.correct"));
 			mb.open();
 			return;
 		}
@@ -152,8 +164,8 @@ public class ChangePwd extends BaseDialog {
 			return;
 		}
 		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-		mb.setText("Information");
-		mb.setMessage("change successful");
+		mb.setText(ResourceUtil.instance().getString("common.information"));
+		mb.setMessage(ResourceUtil.instance().getString("common.update.successful"));
 		mb.open();
 		close();
 	}
