@@ -20,6 +20,7 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.ResourceUtil;
 
 public class Setting extends BaseDialog {
 	private String userPwd;
@@ -33,21 +34,23 @@ public class Setting extends BaseDialog {
 	}
 
 	protected void initContents(Composite parent) {
-		parent.getShell().setText("Password->Setting");
+		parent.getShell().setText(
+				ResourceUtil.instance().getString(simpleClassName + ".title"));
 		Composite main = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout(2, false);
 		gridLayout.horizontalSpacing = 15;
 		main.setLayout(gridLayout);
 
 		Label label_note = new Label(main, SWT.LEFT);
-		label_note
-				.setText("Note:You have to finish this setting since first time to login");
+		label_note.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".note"));
 		GridData data1 = new GridData(GridData.FILL_HORIZONTAL);
 		data1.horizontalSpan = 2;
 		label_note.setLayoutData(data1);
 
 		Label label_useName = new Label(main, SWT.LEFT);
-		label_useName.setText("User Name:");
+		label_useName.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_name"));
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
 		data.minimumWidth = 100;
@@ -63,7 +66,8 @@ public class Setting extends BaseDialog {
 				.getUser_name());
 
 		Label label_userPwd = new Label(main, SWT.LEFT);
-		label_userPwd.setText("User Password:");
+		label_userPwd.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".user_pwd"));
 		label_userPwd.setLayoutData(data);
 		Label text_userPwd = new Label(main, SWT.LEFT);
 		text_userPwd.setLayoutData(data2);
@@ -72,16 +76,21 @@ public class Setting extends BaseDialog {
 		text_userPwd.setText(char2Pwd(userPwd));
 
 		Label label_question = new Label(main, SWT.LEFT);
-		label_question.setText("Question:");
+		label_question.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".question"));
 		label_question.setLayoutData(data);
 		combo_question = new Combo(main, SWT.FLAT | SWT.BORDER | SWT.READ_ONLY);
 		combo_question.setLayoutData(data2);
-		combo_question.setItems(new String[] { "Where were you born?",
-				"When were you born?", "What is your father's name?",
-				"What is your mother's name?" });
+		String[] questions = new String[4];
+		for (int i = 0; i < questions.length; i++) {
+			questions[i] = ResourceUtil.instance().getString(
+					simpleClassName + ".question_" + (i + 1));
+		}
+		combo_question.setItems(questions);
 
 		Label label_answer = new Label(main, SWT.LEFT);
-		label_answer.setText("Answer:");
+		label_answer.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".answer"));
 		label_answer.setLayoutData(data);
 		text_answer = new Text(main, SWT.LEFT);
 		text_answer.setLayoutData(data2);
@@ -101,7 +110,8 @@ public class Setting extends BaseDialog {
 		composite_buttons1.setLayoutData(data3);
 
 		Button button_set = new Button(composite_buttons1, SWT.PUSH);
-		button_set.setText("Set");
+		button_set.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".set"));
 		button_set.setLayoutData(new RowData(60, 25));
 		button_set.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -110,7 +120,8 @@ public class Setting extends BaseDialog {
 		});
 
 		Button button_exit = new Button(composite_buttons1, SWT.PUSH);
-		button_exit.setText("Exit");
+		button_exit.setText(ResourceUtil.instance().getString(
+				simpleClassName + ".exit"));
 		button_exit.setLayoutData(new RowData(60, 25));
 		button_exit.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -130,23 +141,24 @@ public class Setting extends BaseDialog {
 
 	private void set() {
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText("Error");
+		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (combo_question.getSelectionIndex() == -1
 				|| combo_question.getItem(combo_question.getSelectionIndex())
 						.length() == 0) {
-			mb.setMessage("user question must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.question.empty"));
 			mb.open();
 			return;
 		}
 		if (text_answer.getText().length() == 0) {
-			mb.setMessage("user answer must not be empty");
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.answer.empty"));
 			mb.open();
 			return;
 		}
 
 		UserInfo user = getData("userinfo", UserInfo.class);
-		user.setQuestion(combo_question.getItem(combo_question
-				.getSelectionIndex()));
+		user.setQuestion(combo_question.getSelectionIndex()+"");
 		user.setAnswer(text_answer.getText());
 
 		if (userinfodao == null)

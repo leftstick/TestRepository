@@ -166,8 +166,14 @@ public class Forget extends BaseDialog {
 			mb.open();
 			return;
 		}
+		int index = -1;
+		try {
+			index = Integer.parseInt(user.getQuestion());
+		} catch (NumberFormatException e) {
+		}
 		if (!combo_question.getItem(combo_question.getSelectionIndex()).equals(
-				user.getQuestion())) {
+				user.getQuestion())
+				&& combo_question.getSelectionIndex() != index) {
 			mb.setMessage(ResourceUtil.instance().getString(
 					"common.error.question.error"));
 			mb.open();
