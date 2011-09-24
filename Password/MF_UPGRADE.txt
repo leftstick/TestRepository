@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Class-Path: ./libs/commons-beanutils-1.8.3.jar 
+  ./libs/commons-io-2.0.1.jar
+  ./libs/commons-logging-1.1.1.jar
+  ./libs/je-4.1.10.jar
+  ./libs/org.eclipse.core.commands.jar
+  ./libs/org.eclipse.equinox.common.jar
+  ./libs/org.eclipse.jface.jar
+  ./libs/org.eclipse.osgi.jar
+  ./libs/org.eclipse.ui.workbench.jar
+  ./libs/swt.jar 
+Main-Class: org.nanfeng.ui.UpgradePage

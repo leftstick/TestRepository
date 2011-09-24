@@ -1,5 +1,7 @@
 package org.nanfeng.dao.impl;
 
+import java.util.List;
+
 import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.db.Connection;
@@ -34,7 +36,7 @@ public class UserInfoDaoImpl implements UserInfoDao {
 	}
 
 	public UserInfo get(String userName) {
-		UserInfo info=null;
+		UserInfo info = null;
 		Connection<UserInfo> conn = Connection.createConnection(
 				DataBaseConstants.envHome, UserInfo.class);
 		Statement<UserInfo> stmt = conn.createStatement();
@@ -44,6 +46,19 @@ public class UserInfoDaoImpl implements UserInfoDao {
 		}
 		conn.close();
 		return info;
+	}
+
+	public List<UserInfo> get() {
+		List<UserInfo> list = null;
+		Connection<UserInfo> conn = Connection.createConnection(
+				DataBaseConstants.envHome, UserInfo.class);
+		Statement<UserInfo> stmt = conn.createStatement();
+		try {
+			list = stmt.get();
+		} catch (RecordNotExistsException e) {
+		}
+		conn.close();
+		return list;
 	}
 
 }

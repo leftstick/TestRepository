@@ -146,7 +146,6 @@ public class Login extends BaseDialog {
 	}
 
 	private void login() {
-
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
 		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_userName.getText().trim().length() == 0) {

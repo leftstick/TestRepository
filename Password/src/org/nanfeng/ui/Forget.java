@@ -107,7 +107,7 @@ public class Forget extends BaseDialog {
 		Button button_get = new Button(composite_buttons1, SWT.PUSH);
 		button_get.setText(ResourceUtil.instance().getString(
 				simpleClassName + ".get"));
-		button_get.setLayoutData(new RowData(50, 25));
+		button_get.setLayoutData(new RowData(60, 25));
 		button_get.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				get();
@@ -135,9 +135,7 @@ public class Forget extends BaseDialog {
 			mb.open();
 			return;
 		}
-		if (combo_question.getSelectionIndex() == -1
-				|| combo_question.getItem(combo_question.getSelectionIndex())
-						.length() == 0) {
+		if (combo_question.getSelectionIndex() == -1) {
 			mb.setMessage(ResourceUtil.instance().getString(
 					"common.error.question.empty"));
 			mb.open();
@@ -166,14 +164,19 @@ public class Forget extends BaseDialog {
 			mb.open();
 			return;
 		}
+		if (user.getQuestion().trim().length() == 0) {
+			mb.setMessage(ResourceUtil.instance().getString(
+					"common.error.user.question.notfound"));
+			mb.open();
+			return;
+
+		}
 		int index = -1;
 		try {
 			index = Integer.parseInt(user.getQuestion());
 		} catch (NumberFormatException e) {
 		}
-		if (!combo_question.getItem(combo_question.getSelectionIndex()).equals(
-				user.getQuestion())
-				&& combo_question.getSelectionIndex() != index) {
+		if (combo_question.getSelectionIndex() != index) {
 			mb.setMessage(ResourceUtil.instance().getString(
 					"common.error.question.error"));
 			mb.open();

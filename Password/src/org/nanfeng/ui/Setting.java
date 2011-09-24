@@ -142,9 +142,7 @@ public class Setting extends BaseDialog {
 	private void set() {
 		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
 		mb.setText(ResourceUtil.instance().getString("common.error"));
-		if (combo_question.getSelectionIndex() == -1
-				|| combo_question.getItem(combo_question.getSelectionIndex())
-						.length() == 0) {
+		if (combo_question.getSelectionIndex() == -1) {
 			mb.setMessage(ResourceUtil.instance().getString(
 					"common.error.question.empty"));
 			mb.open();
@@ -158,7 +156,7 @@ public class Setting extends BaseDialog {
 		}
 
 		UserInfo user = getData("userinfo", UserInfo.class);
-		user.setQuestion(combo_question.getSelectionIndex()+"");
+		user.setQuestion(combo_question.getSelectionIndex() + "");
 		user.setAnswer(text_answer.getText());
 
 		if (userinfodao == null)

@@ -1,5 +1,7 @@
 package org.nanfeng.dao;
 
+import java.util.List;
+
 import org.nanfeng.bean.impl.UserInfo;
 
 public interface UserInfoDao {
@@ -10,4 +12,6 @@ public interface UserInfoDao {
 	public void delete(UserInfo user);
 
 	public UserInfo get(String userName);
+
+	public List<UserInfo> get();
 }

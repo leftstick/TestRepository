@@ -1,0 +1,53 @@
+<project name="Password" default="Build" basedir=".">
+	<property name="build.dir" value="./bin" />
+	<property name="jar.keeper" value="Keeper.jar" />
+	<property name="jar.upgrade" value="Upgrade.jar" />
+	<target name="Build">
+		<delete file="${jar.keeper}"/>
+		<delete file="${jar.upgrade}"/>
+		<antcall target="buildKeeper" />
+		<antcall target="buildUpgrade" />
+	</target>
+	<target name="buildKeeper">
+		<jar jarfile="${jar.keeper}" basedir="${build.dir}">
+			<include name="**/*" />
+			<exclude name="org/nanfeng/ui/UpgradePage*" />
+			<exclude name="org/nanfeng/upgrade/Upgrade*" />
+			<exclude name="org/nanfeng/upgrade/UpgradeFactory*" />
+			<exclude name="org/nanfeng/upgrade/impl/Upgrade1*" />
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0" />
+				<attribute name="Main-Class" value="org.nanfeng.ui.Login" />
+				<attribute name="Class-Path" value="./libs/commons-beanutils-1.8.3.jar ./libs/commons-io-2.0.1.jar ./libs/commons-logging-1.1.1.jar ./libs/je-4.1.10.jar ./libs/org.eclipse.core.commands.jar ./libs/org.eclipse.equinox.common.jar ./libs/org.eclipse.jface.jar ./libs/org.eclipse.osgi.jar ./libs/org.eclipse.ui.workbench.jar ./libs/swt.jar" />
+			</manifest>
+		</jar>
+	</target>
+	<target name="buildUpgrade">
+		<jar jarfile="${jar.upgrade}" basedir="${build.dir}">
+			<include name="**/*" />
+			<exclude name="org/nanfeng/ui/About*" />
+			<exclude name="org/nanfeng/ui/ChangePwd*" />
+			<exclude name="org/nanfeng/ui/Forget*" />
+			<exclude name="org/nanfeng/ui/Keeper*" />
+			<exclude name="org/nanfeng/ui/Login*" />
+			<exclude name="org/nanfeng/ui/ModifyObject*" />
+			<exclude name="org/nanfeng/ui/NewObject*" />
+			<exclude name="org/nanfeng/ui/Register*" />
+			<exclude name="org/nanfeng/ui/Setting*" />
+			<exclude name="org/nanfeng/ui/icon/about*" />
+			<exclude name="org/nanfeng/ui/icon/add*" />
+			<exclude name="org/nanfeng/ui/icon/change*" />
+			<exclude name="org/nanfeng/ui/icon/delete*" />
+			<exclude name="org/nanfeng/ui/icon/exit*" />
+			<exclude name="org/nanfeng/ui/icon/logout*" />
+			<exclude name="org/nanfeng/ui/icon/modify*" />
+			<exclude name="org/nanfeng/ui/icon/online*" />
+			<exclude name="org/nanfeng/ui/icon/search*" />
+			<manifest>
+				<attribute name="Manifest-Version" value="1.0" />
+				<attribute name="Main-Class" value="org.nanfeng.ui.UpgradePage" />
+				<attribute name="Class-Path" value="./libs/commons-beanutils-1.8.3.jar ./libs/commons-io-2.0.1.jar ./libs/commons-logging-1.1.1.jar ./libs/je-4.1.10.jar ./libs/org.eclipse.core.commands.jar ./libs/org.eclipse.equinox.common.jar ./libs/org.eclipse.jface.jar ./libs/org.eclipse.osgi.jar ./libs/org.eclipse.ui.workbench.jar ./libs/swt.jar" />
+			</manifest>
+		</jar>
+	</target>
+</project>
