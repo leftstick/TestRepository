@@ -1,5 +1,6 @@
 package org.nanfeng.ui;
 
+import java.io.IOException;
 import java.text.Collator;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MessageBox;
@@ -48,6 +50,8 @@ import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DataOperator;
+import org.nanfeng.util.MessageUtil;
 import org.nanfeng.util.ResourceUtil;
 
 public class Keeper extends BaseDialog {
@@ -362,6 +366,73 @@ public class Keeper extends BaseDialog {
 				}
 				changePwd.setData("userinfo", user);
 				changePwd.show(true);
+			}
+		});
+		menu_option.add(new Action("&"
+				+ ResourceUtil.instance()
+						.getString(simpleClassName + ".import") + "@Ctrl+I",
+				Action.AS_PUSH_BUTTON) {
+			public ImageDescriptor getImageDescriptor() {
+				return ImageDescriptor.createFromURL(this.getClass()
+						.getResource("icon/import.jpg"));
+			}
+
+			public void run() {
+				FileDialog fd = new FileDialog(getShell(), SWT.OPEN);
+				String filepath = fd.open();
+				DataOperator dataoperator = new DataOperator(user
+						.getUser_name());
+				int[] result;
+				try {
+					result = dataoperator.importData(user.getUser_name(),
+							filepath);
+				} catch (IOException e) {
+					MessageUtil.openError(getShell(), ResourceUtil.instance()
+							.getString("common.error"), e.getMessage());
+					return;
+				}
+				MessageUtil
+						.openInformation(
+								getShell(),
+								ResourceUtil.instance().getString(
+										"common.information"),
+								ResourceUtil.instance().getString(
+										"common.import.successful")
+										+ "\n"
+										+ ResourceUtil.instance().getString(
+												"common.import.total.num")
+										+ result[0]
+										+ "\n"
+										+ ResourceUtil.instance().getString(
+												"common.import.success.num")
+										+ result[1]);
+				view_left.setInput(objectinfodao.get(user.getUser_name()));
+			}
+		});
+		menu_option.add(new Action("&"
+				+ ResourceUtil.instance()
+						.getString(simpleClassName + ".export") + "@Ctrl+E",
+				Action.AS_PUSH_BUTTON) {
+			public ImageDescriptor getImageDescriptor() {
+				return ImageDescriptor.createFromURL(this.getClass()
+						.getResource("icon/export.jpg"));
+			}
+
+			public void run() {
+				FileDialog fd = new FileDialog(getShell(), SWT.SAVE);
+				String filepath = fd.open();
+				DataOperator dataoperator = new DataOperator(user
+						.getUser_name());
+				try {
+					dataoperator.exportData(filepath);
+				} catch (IOException e) {
+					MessageUtil.openError(getShell(), ResourceUtil.instance()
+							.getString("common.error"), e.getMessage());
+					return;
+				}
+				MessageUtil.openInformation(getShell(), ResourceUtil.instance()
+						.getString("common.information"), ResourceUtil
+						.instance().getString("common.export.successful"));
 			}
 		});
 		menu_language.add(action_chinese = new Action("&"

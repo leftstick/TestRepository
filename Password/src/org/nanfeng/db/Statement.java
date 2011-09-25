@@ -1,13 +1,13 @@
 /*
  * 
  *  
- *  ÏîÄ¿Ãû³Æ£º   BDBTest 
+ *  ï¿½ï¿½Ä¿ï¿½ï¿½Æ£ï¿½   BDBTest 
  *
- *  ¹«Ë¾Ãû³Æ:   ÉÏº£Åµì÷¿Æ¼¼ÓÐÏÞ¹«Ë¾
+ *  ï¿½ï¿½Ë¾ï¿½ï¿½ï¿½:   ï¿½Ïºï¿½Åµï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½Þ¹ï¿½Ë¾
  *  
- *  Äê·Ý£º     2011
- *  ´´½¨ÈÕÆÚ:   2011-1-14 
- *  CVS°æ±¾:    $Id: codetemplates.xml,v 1.1 2007/08/06 08:17:54 linxin Exp $
+ *  ï¿½ï¿½Ý£ï¿½     2011
+ *  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:   2011-1-14 
+ *  CVSï¿½æ±¾:    $Id: codetemplates.xml,v 1.1 2007/08/06 08:17:54 linxin Exp $
  */
 
 package org.nanfeng.db;
@@ -44,8 +44,8 @@ import com.sleepycat.je.Transaction;
 
 /**
  * @purpose
- * @author ÄÏ·ç
- * @version $Revision: 1.1 $ ½¨Á¢ÈÕÆÚ 2011-1-14
+ * @author ï¿½Ï·ï¿½
+ * @version $Revision: 1.1 $ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2011-1-14
  */
 public class Statement<E> {
 	private final Connection<E> connection;
@@ -207,8 +207,8 @@ public class Statement<E> {
 		} catch (RecordNotExistsException e) {
 		}
 		if (info != null)
-			throw new RecordExistsException("Êý¾Ý±í[" + table_name + "]ÖÐ¼ü["
-					+ primaryValue + "]ÒÑ´æÔÚ");
+			throw new RecordExistsException("Record [" + table_name + "] ["
+					+ primaryValue + "] already exists");
 		bind_primary_key.objectToEntry(pojo, data);
 		OperationStatus os;
 		if (transactions != null)

@@ -23,6 +23,7 @@ import org.nanfeng.util.ResourceUtil;
 
 public class Login extends BaseDialog {
 	private Register register;
+	private Setting setting;
 	private Forget forget;
 	private Text text_userName;
 	private Text text_userPwd;
@@ -173,6 +174,14 @@ public class Login extends BaseDialog {
 			mb.setMessage(ResourceUtil.instance().getString(
 					"common.error.userpwd.notcorrect"));
 			mb.open();
+			return;
+		}
+
+		if (user.getQuestion().trim().length() == 0) {
+			if (setting == null)
+				setting = new Setting();
+			setting.setData("userinfo", user);
+			setting.show(true);
 			return;
 		}
 		Keeper keeper = new Keeper();

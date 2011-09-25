@@ -12,4 +12,6 @@ public interface ObjectInfoDao {
 	public void delete(ObjectInfo obj);
 
 	public List<ObjectInfo> get(String userName);
+
+	public ObjectInfo get(String userName, String objectName);
 }

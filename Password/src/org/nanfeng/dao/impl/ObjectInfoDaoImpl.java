@@ -47,4 +47,17 @@ public class ObjectInfoDaoImpl implements ObjectInfoDao {
 		return list;
 	}
 
+	public ObjectInfo get(String userName, String objectName) {
+		List<ObjectInfo> list;
+		Connection<ObjectInfo> conn = Connection.createConnection(
+				DataBaseConstants.envHome, ObjectInfo.class);
+		Statement<ObjectInfo> stmt = conn.createStatement();
+		Context context = new Context();
+		context.setValue("user_name", userName);
+		context.setValue("object_name", objectName);
+		list = stmt.getBySecondaryKey(context);
+		conn.close();
+		return list.isEmpty() ? null : list.get(0);
+	}
+
 }
