@@ -19,5 +19,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="var" path="BERKELEY_HOME/je-4.1.10/lib/je-4.1.10.jar" sourcepath="/BERKELEY_HOME/je-4.1.7/je-4.1.7/src"/>
+	<classpathentry kind="var" path="JSON_HOME/json-lib-2.4-jdk15.jar" sourcepath="/JSON_HOME/json-lib-2.4-jdk15-sources.jar"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-collections-3.2.1/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/ezmorph-1.0.6.jar"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-lang-2.6/commons-lang-2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

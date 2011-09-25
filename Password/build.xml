@@ -3,8 +3,8 @@
 	<property name="jar.keeper" value="Keeper.jar" />
 	<property name="jar.upgrade" value="Upgrade.jar" />
 	<target name="Build">
-		<delete file="${jar.keeper}"/>
-		<delete file="${jar.upgrade}"/>
+		<delete file="${jar.keeper}" />
+		<delete file="${jar.upgrade}" />
 		<antcall target="buildKeeper" />
 		<antcall target="buildUpgrade" />
 	</target>
@@ -18,7 +18,7 @@
 			<manifest>
 				<attribute name="Manifest-Version" value="1.0" />
 				<attribute name="Main-Class" value="org.nanfeng.ui.Login" />
-				<attribute name="Class-Path" value="./libs/commons-beanutils-1.8.3.jar ./libs/commons-io-2.0.1.jar ./libs/commons-logging-1.1.1.jar ./libs/je-4.1.10.jar ./libs/org.eclipse.core.commands.jar ./libs/org.eclipse.equinox.common.jar ./libs/org.eclipse.jface.jar ./libs/org.eclipse.osgi.jar ./libs/org.eclipse.ui.workbench.jar ./libs/swt.jar" />
+				<attribute name="Class-Path" value="./libs/commons-beanutils-1.8.3.jar ./libs/commons-io-2.0.1.jar ./libs/commons-logging-1.1.1.jar ./libs/je-4.1.10.jar ./libs/org.eclipse.core.commands.jar ./libs/org.eclipse.equinox.common.jar ./libs/org.eclipse.jface.jar ./libs/org.eclipse.osgi.jar ./libs/org.eclipse.ui.workbench.jar ./libs/swt.jar ./libs/json-lib-2.4-jdk15.jar ./libs/commons-lang-2.6.jar ./libs/ezmorph-1.0.6.jar ./libs/commons-collections-3.2.1.jar" />
 			</manifest>
 		</jar>
 	</target>
