@@ -13,12 +13,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.ResourceUtil;
 
 public class Forget extends BaseDialog {
@@ -127,24 +127,19 @@ public class Forget extends BaseDialog {
 	}
 
 	private void get() {
-		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_userName.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.username.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.username.empty"));
 			return;
 		}
 		if (combo_question.getSelectionIndex() == -1) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.question.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.question.empty"));
 			return;
 		}
 		if (text_answer.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.answer.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.answer.empty"));
 			return;
 		}
 
@@ -154,20 +149,17 @@ public class Forget extends BaseDialog {
 		try {
 			user = userinfodao.get(text_userName.getText());
 		} catch (Exception e) {
-			mb.setMessage(e.getMessage());
-			mb.open();
+			DialogFactory.openError(getShell(), e.getMessage());
 			return;
 		}
 		if (user == null) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.user.notfound"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.user.notfound"));
 			return;
 		}
 		if (user.getQuestion().trim().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.user.question.notfound"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.user.question.notfound"));
 			return;
 
 		}
@@ -177,22 +169,16 @@ public class Forget extends BaseDialog {
 		} catch (NumberFormatException e) {
 		}
 		if (combo_question.getSelectionIndex() != index) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.question.error"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.question.error"));
 			return;
 		}
 		if (!text_answer.getText().equals(user.getAnswer())) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.answer.error"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.answer.error"));
 			return;
 		}
-		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.information"));
-		mb.setMessage(ResourceUtil.instance().getString("common.pwd")
-				+ user.getUser_pwd());
-		mb.open();
-
+		DialogFactory.openInformation(getShell(), ResourceUtil.instance()
+				.getString("common.pwd") + user.getUser_pwd());
 	}
 }

@@ -14,12 +14,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.ResourceUtil;
 
 public class Setting extends BaseDialog {
@@ -140,18 +140,14 @@ public class Setting extends BaseDialog {
 	}
 
 	private void set() {
-		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (combo_question.getSelectionIndex() == -1) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.question.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.question.empty"));
 			return;
 		}
 		if (text_answer.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.answer.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.answer.empty"));
 			return;
 		}
 
@@ -165,8 +161,7 @@ public class Setting extends BaseDialog {
 		try {
 			userinfodao.update(user);
 		} catch (Exception e) {
-			mb.setMessage(e.getMessage());
-			mb.open();
+			DialogFactory.openError(getShell(), e.getMessage());
 			return;
 		}
 

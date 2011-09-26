@@ -39,7 +39,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -51,6 +50,7 @@ import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
 import org.nanfeng.util.DataOperator;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.MessageUtil;
 import org.nanfeng.util.ResourceUtil;
 
@@ -380,6 +380,8 @@ public class Keeper extends BaseDialog {
 			public void run() {
 				FileDialog fd = new FileDialog(getShell(), SWT.OPEN);
 				String filepath = fd.open();
+				if (filepath == null)
+					return;
 				DataOperator dataoperator = new DataOperator(user
 						.getUser_name());
 				int[] result;
@@ -421,6 +423,8 @@ public class Keeper extends BaseDialog {
 			public void run() {
 				FileDialog fd = new FileDialog(getShell(), SWT.SAVE);
 				String filepath = fd.open();
+				if (filepath == null)
+					return;
 				DataOperator dataoperator = new DataOperator(user
 						.getUser_name());
 				try {
@@ -443,13 +447,10 @@ public class Keeper extends BaseDialog {
 				ResourceUtil.instance().modifyLanguageConfig(Locale.CHINESE);
 				action_english.setChecked(false);
 				action_chinese.setChecked(true);
-				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
-						| SWT.OK | SWT.CANCEL);
-				mb.setText(ResourceUtil.instance().getString(
-						"common.information"));
-				mb.setMessage(ResourceUtil.instance().getString(
-						simpleClassName + ".note.change.language"));
-				int o = mb.open();
+				int o = DialogFactory.openConfirm(
+						getShell(),
+						ResourceUtil.instance().getString(
+								simpleClassName + ".note.change.language"));
 				if (o == SWT.OK) {
 					ResourceUtil.instance().refreshCache();
 					close();
@@ -467,13 +468,10 @@ public class Keeper extends BaseDialog {
 				ResourceUtil.instance().modifyLanguageConfig(Locale.ENGLISH);
 				action_chinese.setChecked(false);
 				action_english.setChecked(true);
-				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
-						| SWT.OK | SWT.CANCEL);
-				mb.setText(ResourceUtil.instance().getString(
-						"common.information"));
-				mb.setMessage(ResourceUtil.instance().getString(
-						simpleClassName + ".note.change.language"));
-				int o = mb.open();
+				int o = DialogFactory.openConfirm(
+						getShell(),
+						ResourceUtil.instance().getString(
+								simpleClassName + ".note.change.language"));
 				if (o == SWT.OK) {
 					ResourceUtil.instance().refreshCache();
 					close();
@@ -496,13 +494,10 @@ public class Keeper extends BaseDialog {
 			}
 
 			public void run() {
-				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
-						| SWT.OK | SWT.CANCEL);
-				mb.setText(ResourceUtil.instance().getString(
-						"common.information"));
-				mb.setMessage(ResourceUtil.instance().getString(
-						simpleClassName + ".logout.notify"));
-				int res = mb.open();
+				int res = DialogFactory.openConfirm(
+						getShell(),
+						ResourceUtil.instance().getString(
+								simpleClassName + ".logout.notify"));
 				if (res == SWT.CANCEL)
 					return;
 				if (login == null) {
@@ -525,13 +520,9 @@ public class Keeper extends BaseDialog {
 			}
 
 			public void run() {
-				MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
-						| SWT.OK | SWT.CANCEL);
-				mb.setText(ResourceUtil.instance().getString(
-						"common.information"));
-				mb.setMessage(ResourceUtil.instance().getString(
-						simpleClassName + ".exit.notify"));
-				int o = mb.open();
+				int o = DialogFactory
+						.openConfirm(getShell(), ResourceUtil.instance()
+								.getString(simpleClassName + ".exit.notify"));
 				if (o == SWT.OK)
 					close();
 			}
@@ -581,29 +572,19 @@ public class Keeper extends BaseDialog {
 		TableItem[] items = view_left.getTable().getSelection();
 		ObjectInfo obj = null;
 		if (items != null && items.length > 0) {
-			MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
-					| SWT.OK | SWT.CANCEL);
-			mb.setText(ResourceUtil.instance().getString("common.information"));
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".delete.notify"));
-			int res = mb.open();
+			int res = DialogFactory.openConfirm(getShell(), ResourceUtil
+					.instance().getString(simpleClassName + ".delete.notify"));
 			if (res == SWT.CANCEL)
 				return;
 			try {
 				obj = (ObjectInfo) items[0].getData();
 				objectinfodao.delete(obj);
 			} catch (Exception e) {
-				mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-				mb.setText(ResourceUtil.instance().getString("common.error"));
-				mb.setMessage(e.getMessage());
-				mb.open();
+				DialogFactory.openError(getShell(), e.getMessage());
 				return;
 			}
-			mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-			mb.setText(ResourceUtil.instance().getString("common.information"));
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.delete.successful"));
-			mb.open();
+			DialogFactory.openInformation(getShell(), ResourceUtil.instance()
+					.getString("common.delete.successful"));
 			((List<ObjectInfo>) view_left.getInput()).remove(obj);
 			view_left.refresh();
 			view_right.setInput(null);

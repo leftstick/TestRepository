@@ -12,13 +12,13 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.ResourceUtil;
 
 public class ChangePwd extends BaseDialog {
@@ -119,37 +119,30 @@ public class ChangePwd extends BaseDialog {
 	}
 
 	private void change() {
-		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_oldpwd.getText().trim().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".oldpwd.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".oldpwd.empty"));
 			return;
 		}
 		if (text_newPwd.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".newpwd.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".newpwd.empty"));
 			return;
 		}
 		if (text_newPwd2.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".repnewpwd.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".repnewpwd.empty"));
 			return;
 		}
 		if (!text_newPwd2.getText().equals(text_newPwd.getText())) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".oldnew.not.same"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".oldnew.not.same"));
 			return;
 		}
 		UserInfo user = getData("userinfo", UserInfo.class);
 		if (!text_oldpwd.getText().equals(user.getUser_pwd())) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".oldpwd.not.correct"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".oldpwd.not.correct"));
 			return;
 		}
 
@@ -159,14 +152,11 @@ public class ChangePwd extends BaseDialog {
 		try {
 			userinfodao.update(user);
 		} catch (Exception e) {
-			mb.setMessage(e.getMessage());
-			mb.open();
+			DialogFactory.openError(getShell(), e.getMessage());
 			return;
 		}
-		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.information"));
-		mb.setMessage(ResourceUtil.instance().getString("common.update.successful"));
-		mb.open();
+		DialogFactory.openInformation(getShell(), ResourceUtil.instance()
+				.getString("common.update.successful"));
 		close();
 	}
 }

@@ -13,12 +13,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.ResourceUtil;
 
 public class Login extends BaseDialog {
@@ -147,33 +147,27 @@ public class Login extends BaseDialog {
 	}
 
 	private void login() {
-		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_userName.getText().trim().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.username.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.username.empty"));
 			return;
 		}
 		if (text_userPwd.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.userpwd.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.userpwd.empty"));
 			return;
 		}
 		if (userdao == null)
 			userdao = new UserInfoDaoImpl();
 		UserInfo user = userdao.get(text_userName.getText());
 		if (user == null) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.user.notfound"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.user.notfound"));
 			return;
 		}
 		if (!user.getUser_pwd().equals(text_userPwd.getText())) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.userpwd.notcorrect"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.userpwd.notcorrect"));
 			return;
 		}
 
@@ -181,6 +175,7 @@ public class Login extends BaseDialog {
 			if (setting == null)
 				setting = new Setting();
 			setting.setData("userinfo", user);
+			close();
 			setting.show(true);
 			return;
 		}

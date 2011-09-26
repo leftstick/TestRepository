@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -43,6 +42,7 @@ import org.nanfeng.dao.ObjectInfoDao;
 import org.nanfeng.dao.impl.HiloDao;
 import org.nanfeng.dao.impl.ObjectInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.ResourceUtil;
 
 public class NewObject extends BaseDialog {
@@ -212,12 +212,9 @@ public class NewObject extends BaseDialog {
 	private void delete() {
 		TableItem[] items = view.getTable().getSelection();
 		if (items != null && items.length > 0) {
-			MessageBox mb = new MessageBox(getShell(), SWT.ICON_INFORMATION
-					| SWT.OK | SWT.CANCEL);
-			mb.setText(ResourceUtil.instance().getString("common.information"));
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".delete.notify"));
-			int res = mb.open();
+			;
+			int res = DialogFactory.openConfirm(getShell(), ResourceUtil
+					.instance().getString(simpleClassName + ".delete.notify"));
 			if (res == SWT.CANCEL)
 				return;
 			if (view.getTable().getItems().length == 1)
@@ -227,11 +224,8 @@ public class NewObject extends BaseDialog {
 					&& (op.value == null || op.value.trim().length() == 0))
 				return;
 			((List<ObjectProperty>) view.getInput()).remove(items[0].getData());
-			mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-			mb.setText(ResourceUtil.instance().getString("common.information"));
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.delete.successful"));
-			mb.open();
+			DialogFactory.openInformation(getShell(), ResourceUtil.instance()
+					.getString("common.delete.successful"));
 			view.refresh();
 		}
 	}
@@ -262,18 +256,14 @@ public class NewObject extends BaseDialog {
 	}
 
 	private void save() {
-		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.error"));
 		if (text_objectName.getText().trim().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".objname.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".objname.empty"));
 			return;
 		}
 		if (text_description.getText().trim().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".objdesc.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".objdesc.empty"));
 			return;
 		}
 		int searchWide = 0;
@@ -289,9 +279,8 @@ public class NewObject extends BaseDialog {
 			ObjectProperty op = (ObjectProperty) items[i].getData();
 			if (op.key == null || op.key.trim().length() == 0
 					|| op.value == null || op.value.trim().length() == 0) {
-				mb.setMessage(ResourceUtil.instance().getString(
-						simpleClassName + ".objpro.empty"));
-				mb.open();
+				DialogFactory.openError(getShell(), ResourceUtil.instance()
+						.getString(simpleClassName + ".objpro.empty"));
 				return;
 			}
 		}
@@ -305,9 +294,8 @@ public class NewObject extends BaseDialog {
 			obj.addProperty(op);
 		}
 		if (obj.getObjectProperties().isEmpty()) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					simpleClassName + ".objpro.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString(simpleClassName + ".objpro.empty"));
 			return;
 		}
 		if (objectinfodao == null)
@@ -315,17 +303,12 @@ public class NewObject extends BaseDialog {
 		try {
 			objectinfodao.save(obj);
 		} catch (Exception e) {
-			e.printStackTrace();
-			mb.setMessage(e.getMessage());
-			mb.open();
+			DialogFactory.openError(getShell(), e.getMessage());
 			return;
 		}
 		setData("newObject", obj);
-		mb = new MessageBox(getShell(), SWT.ICON_INFORMATION | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString("common.information"));
-		mb.setMessage(ResourceUtil.instance().getString(
-				"common.save.successful"));
-		mb.open();
+		DialogFactory.openInformation(getShell(), ResourceUtil.instance()
+				.getString("common.save.successful"));
 		close();
 	}
 

@@ -12,12 +12,12 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.nanfeng.bean.impl.UserInfo;
 import org.nanfeng.dao.UserInfoDao;
 import org.nanfeng.dao.impl.UserInfoDaoImpl;
 import org.nanfeng.ui.face.BaseDialog;
+import org.nanfeng.util.DialogFactory;
 import org.nanfeng.util.ResourceUtil;
 
 public class Register extends BaseDialog {
@@ -104,19 +104,14 @@ public class Register extends BaseDialog {
 	}
 
 	private void register() {
-		MessageBox mb = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-		mb.setText(ResourceUtil.instance().getString(
-		"common.error"));
 		if (text_userName.getText().trim().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.username.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.username.empty"));
 			return;
 		}
 		if (text_userPwd.getText().length() == 0) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.userpwd.empty"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.userpwd.empty"));
 			return;
 		}
 
@@ -126,17 +121,15 @@ public class Register extends BaseDialog {
 		user.setUser_name(text_userName.getText());
 		user.setUser_pwd(text_userPwd.getText());
 		if (userinfodao.get(user.getUser_name()) != null) {
-			mb.setMessage(ResourceUtil.instance().getString(
-					"common.error.user.exists"));
-			mb.open();
+			DialogFactory.openError(getShell(), ResourceUtil.instance()
+					.getString("common.error.user.exists"));
 			return;
 		}
 
 		try {
 			userinfodao.save(user);
 		} catch (Exception e) {
-			mb.setMessage(e.getMessage());
-			mb.open();
+			DialogFactory.openError(getShell(), e.getMessage());
 			return;
 		}
 
