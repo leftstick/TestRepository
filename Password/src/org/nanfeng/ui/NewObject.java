@@ -301,7 +301,13 @@ public class NewObject extends BaseDialog {
 		if (objectinfodao == null)
 			objectinfodao = new ObjectInfoDaoImpl();
 		try {
-			objectinfodao.save(obj);
+			if (objectinfodao.get(obj.getUser_name(), obj.getObject_name()) == null)
+				objectinfodao.save(obj);
+			else {
+				DialogFactory.openError(getShell(), ResourceUtil.instance()
+						.getString(simpleClassName + ".object.exists"));
+				return;
+			}
 		} catch (Exception e) {
 			DialogFactory.openError(getShell(), e.getMessage());
 			return;
