@@ -22,6 +22,9 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -66,6 +69,8 @@ public class Keeper extends BaseDialog {
 	private ViewerFilter filter;
 	private Action action_modify;
 	private Action action_delete;
+	private Action action_copyItemName;
+	private Action action_copyContent;
 	private Action action_chinese;
 	private Action action_english;
 	private ObjectInfoDao objectinfodao;
@@ -189,7 +194,7 @@ public class Keeper extends BaseDialog {
 					setModifyAndDelete(true);
 			}
 		});
-		PopMenu pm = new PopMenu();
+		PopMenuLeft pm = new PopMenuLeft();
 		pm.fillContextMenu(new MenuManager());
 
 		view_right = new TableViewer(sash, SWT.V_SCROLL | SWT.BORDER
@@ -261,6 +266,18 @@ public class Keeper extends BaseDialog {
 								- tc.getWidth());
 					}
 				});
+		view_right.getTable().addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
+				TableItem item = view_right.getTable().getItem(
+						new Point(e.x, e.y));
+				if (item == null) {
+					action_copyContent.setEnabled(false);
+				} else
+					action_copyContent.setEnabled(true);
+			}
+		});
+		PopMenuRight pmr = new PopMenuRight();
+		pmr.fillContextMenu(new MenuManager());
 		setModifyAndDelete(false);
 		user = getData("userinfo", UserInfo.class);
 		view_left.setInput(objectinfodao.get(user.getUser_name()));
@@ -273,6 +290,7 @@ public class Keeper extends BaseDialog {
 	private void setModifyAndDelete(boolean boo) {
 		action_modify.setEnabled(boo);
 		action_delete.setEnabled(boo);
+		action_copyItemName.setEnabled(boo);
 		if (!boo)
 			view_left.getTable().deselectAll();
 	}
@@ -557,13 +575,53 @@ public class Keeper extends BaseDialog {
 			action_english.setChecked(true);
 	}
 
-	class PopMenu extends ActionGroup {
+	class PopMenuLeft extends ActionGroup {
 		public void fillContextMenu(IMenuManager menu) {
 			MenuManager menuManager = (MenuManager) menu;
+			menuManager.add(action_copyItemName = new Action("&"
+					+ ResourceUtil.instance().getString(
+							simpleClassName + ".copy.item"),
+					Action.AS_PUSH_BUTTON) {
+				public void run() {
+					if (view_left.getTable().getSelectionIndex() >= 0) {
+						Clipboard clipboard = new Clipboard(getShell()
+								.getDisplay());
+						TextTransfer textTransfer = TextTransfer.getInstance();
+						clipboard.setContents(new String[] { view_left
+								.getTable().getSelection()[0].getText(0) },
+								new Transfer[] { textTransfer });
+						clipboard.dispose();
+					}
+				}
+			});
 			menuManager.add(action_modify);
 			menuManager.add(action_delete);
 			Menu m = menuManager.createContextMenu(view_left.getTable());
 			view_left.getTable().setMenu(m);
+		}
+	}
+
+	class PopMenuRight extends ActionGroup {
+		public void fillContextMenu(IMenuManager menu) {
+			MenuManager menuManager = (MenuManager) menu;
+			menuManager.add(action_copyContent = new Action("&"
+					+ ResourceUtil.instance().getString(
+							simpleClassName + ".copy.content"),
+					Action.AS_PUSH_BUTTON) {
+				public void run() {
+					if (view_right.getTable().getSelectionIndex() >= 0) {
+						Clipboard clipboard = new Clipboard(getShell()
+								.getDisplay());
+						TextTransfer textTransfer = TextTransfer.getInstance();
+						clipboard.setContents(new String[] { view_right
+								.getTable().getSelection()[0].getText(1) },
+								new Transfer[] { textTransfer });
+						clipboard.dispose();
+					}
+				}
+			});
+			Menu m = menuManager.createContextMenu(view_right.getTable());
+			view_right.getTable().setMenu(m);
 		}
 	}
 

@@ -30,11 +30,6 @@ public class About extends BaseDialog {
 		gl.verticalSpacing = 15;
 		main.setLayout(gl);
 		Label text = new Label(main, SWT.CENTER);
-		// StringBuffer sb = new StringBuffer();
-		// sb.append("Software: Password Keeper\n");
-		// sb.append("Author: ZuoHao\n");
-		// sb.append("Version: 1.0\n");
-		// sb.append("Update time: 2011-09-22 21:15\n");
 		text.setText(ResourceUtil.instance().getString(
 				simpleClassName + ".info"));
 
