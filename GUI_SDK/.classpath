@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_24"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt"/>
+	<classpathentry kind="var" path="DOM4J_HOME/dom4j-1.6.1.jar" sourcepath="/DOM4J_HOME/src"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-lang3-3.0.1/commons-lang3-3.0.1.jar" sourcepath="/APACHE_HOME/Library/commons-lang3-3.0.1/commons-lang-3.0.1-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

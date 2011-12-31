@@ -1,0 +1,31 @@
+<project name="GUI_SDK" default="Build" basedir=".">
+	<property name="version" value="1.0" />
+	<property name="src.dir" value="./src" />
+	<property name="class.dir" value="./bin" />
+	<property name="build.dir" value="./build" />
+	<property name="jar.sdk" value="GUI-SDK-${version}.jar" />
+	<property name="jar.source.sdk" value="GUI-SDK-source-${version}.jar" />
+	<target name="Build">
+		<delete dir="${build.dir}"></delete>
+		<mkdir dir="${build.dir}" />
+		<antcall target="buildSDK" />
+		<antcall target="buildSDK_Source" />
+		<delete dir="${build.dir}" />
+	</target>
+	<target name="buildSDK">
+		<copy todir="${build.dir}">
+			<fileset dir="${class.dir}">
+			</fileset>
+		</copy>
+		<jar jarfile="${jar.sdk}" basedir="${build.dir}">
+			<include name="**/*" />
+		</jar>
+	</target>
+	<target name="buildSDK_Source">
+		<copydir dest="${build.dir}" src="${src.dir}">
+		</copydir>
+		<jar jarfile="${jar.source.sdk}" basedir="${build.dir}">
+			<include name="**/*" />
+		</jar>
+	</target>
+</project>
