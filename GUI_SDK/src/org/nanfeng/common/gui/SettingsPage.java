@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -30,6 +32,9 @@ import org.nanfeng.common.state.Submit;
 
 public class SettingsPage extends Composite {
 
+	public static final int TEXT_COLUMN = 0;
+	public static final int RADIO_COLUMN = 1;
+
 	private Button button_ok;
 	private TableViewer tableView_parameter;
 	private Table table_parameter;
@@ -37,11 +42,14 @@ public class SettingsPage extends Composite {
 	private String text2;
 	private List<ObjectProperty> parameters;
 	private ParameterChecker checker;
+	private int style;
 
-	public SettingsPage(Composite parent, String column1Text, String column2Text) {
+	public SettingsPage(Composite parent, String column1Text,
+			String column2Text, int style) {
 		super(parent, SWT.NONE);
 		text1 = column1Text;
 		text2 = column2Text;
+		this.style = style;
 		init();
 	}
 
@@ -80,10 +88,20 @@ public class SettingsPage extends Composite {
 				}
 			}
 		});
-		
+
 		tableView_parameter.setColumnProperties(new String[] { text1, text2 });
 		CellEditor editor1 = new TextCellEditor(table_parameter);
-		CellEditor editor2 = new TextCellEditor(table_parameter);
+		CellEditor editor2 = null;
+		switch (style) {
+		case TEXT_COLUMN:
+			editor2 = new TextCellEditor(table_parameter);
+			break;
+		case RADIO_COLUMN:
+			editor2 = new CheckboxCellEditor(table_parameter);
+			break;
+		default:
+			throw new RuntimeException("error style " + style);
+		}
 		tableView_parameter
 				.setCellEditors(new CellEditor[] { editor1, editor2 });
 		tableView_parameter.setContentProvider(new SimpleContentProvider());
@@ -93,7 +111,15 @@ public class SettingsPage extends Composite {
 	}
 
 	public void addLineText(String label) {
+		Assert.isTrue(style == TEXT_COLUMN, "text line is not available");
 		ObjectProperty op = new ObjectProperty(label, "");
+		parameters.add(op);
+		tableView_parameter.refresh();
+	}
+
+	public void addLineChecked(String label) {
+		Assert.isTrue(style == RADIO_COLUMN, "checked line is not available");
+		ObjectProperty op = new ObjectProperty(label, false);
 		parameters.add(op);
 		tableView_parameter.refresh();
 	}
@@ -118,18 +144,30 @@ public class SettingsPage extends Composite {
 	}
 
 	private void submit(final Submit sub) {
-		List<Object> list = new ArrayList<Object>();
-		boolean f = false;
-		for (int i = 0; i < parameters.size(); i++) {
-			if (checker != null) {
-				f = checker.check(i, parameters.get(i).value);
-				if (!f)
-					return;
-				list.add(parameters.get(i).value);
-			} else
-				list.add(parameters.get(i).value);
+		switch (style) {
+		case TEXT_COLUMN:
+			List<Object> list = new ArrayList<Object>();
+			boolean f = false;
+			for (int i = 0; i < parameters.size(); i++) {
+				if (checker != null) {
+					f = checker.check(i, parameters.get(i).value);
+					if (!f)
+						return;
+					list.add(parameters.get(i).value);
+				} else
+					list.add(parameters.get(i).value);
+			}
+			sub.run(list);
+			break;
+		case RADIO_COLUMN:
+			for (int i = 0; i < parameters.size(); i++) {
+				if ((Boolean) parameters.get(i).value) {
+					sub.run(i);
+					break;
+				}
+			}
+			break;
 		}
-		sub.run(list);
 	}
 
 	class Column2Modifier implements ICellModifier {
@@ -155,7 +193,14 @@ public class SettingsPage extends Composite {
 			if (property.equals(text1)) {
 				entry.key = value.toString();
 			} else if (property.equals(text2)) {
-				entry.value = value.toString();
+				entry.value = value;
+				if (style == RADIO_COLUMN) {
+					for (ObjectProperty oo : parameters) {
+						oo.value = false;
+					}
+					tableView_parameter.refresh();
+					entry.value = value;
+				}
 			}
 			tableView_parameter.update(entry, null);
 		}
@@ -189,7 +234,10 @@ public class SettingsPage extends Composite {
 				case 0:
 					return obj.key;
 				case 1:
-					return obj.value;
+					if (style == RADIO_COLUMN) {
+						return (Boolean) obj.value == true ? "¡Ì" : "";
+					}
+					return obj.value.toString();
 				default:
 					return null;
 				}
@@ -207,9 +255,9 @@ public class SettingsPage extends Composite {
 		 */
 		private static final long serialVersionUID = 2447812285760065930L;
 		public String key;
-		public String value;
+		public Object value;
 
-		public ObjectProperty(String k, String v) {
+		public ObjectProperty(String k, Object v) {
 			key = k;
 			value = v;
 		}
