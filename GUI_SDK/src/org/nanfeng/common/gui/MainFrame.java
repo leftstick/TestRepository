@@ -11,8 +11,9 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -86,15 +87,16 @@ public abstract class MainFrame extends ApplicationWindow {
 				- parent.getShell().getSize().x / 2, Display.getCurrent()
 				.getClientArea().height / 2 - parent.getShell().getSize().y / 2);
 		centralComposite = new Composite(parent, SWT.BORDER);
-		centralComposite.setLayout(new GridLayout(1, true));
-
+		centralComposite.setLayout(new StackLayout());
+		GridData gd = new GridData();
+		centralComposite.setLayoutData(gd);
 		setContents(centralComposite);
 		if (guiSettings != null
 				&& guiSettings.containsKey(GuiSettingsParser.STATE)) {
 			AbstractStatusLine line = (AbstractStatusLine) guiSettings
 					.get(GuiSettingsParser.STATE);
 			stateStateListeners.add(line);
-			changeStateLineState(null);
+			notifyLineState(null);
 		}
 		return parent;
 	}
@@ -107,13 +109,13 @@ public abstract class MainFrame extends ApplicationWindow {
 		return centralComposite;
 	}
 
-	public final void changeActionState(Object state) {
+	public final void notifyActions(Object state) {
 		for (State actionState : actionsStateListeners) {
 			actionState.stateChanged(state);
 		}
 	}
 
-	public final void changeStateLineState(Object state) {
+	public final void notifyLineState(Object state) {
 		for (State stateLine : stateStateListeners) {
 			stateLine.stateChanged(state);
 		}

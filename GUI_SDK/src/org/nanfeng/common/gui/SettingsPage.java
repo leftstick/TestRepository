@@ -110,9 +110,9 @@ public class SettingsPage extends Composite {
 		tableView_parameter.setInput(parameters);
 	}
 
-	public void addLineText(String label) {
+	public void addLineText(String label, String value) {
 		Assert.isTrue(style == TEXT_COLUMN, "text line is not available");
-		ObjectProperty op = new ObjectProperty(label, "");
+		ObjectProperty op = new ObjectProperty(label, value);
 		parameters.add(op);
 		tableView_parameter.refresh();
 	}
@@ -121,6 +121,11 @@ public class SettingsPage extends Composite {
 		Assert.isTrue(style == RADIO_COLUMN, "checked line is not available");
 		ObjectProperty op = new ObjectProperty(label, false);
 		parameters.add(op);
+		tableView_parameter.refresh();
+	}
+
+	public void resetLines() {
+		parameters.clear();
 		tableView_parameter.refresh();
 	}
 

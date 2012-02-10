@@ -6,27 +6,28 @@ import org.nanfeng.common.context.impl.ContextImpl;
 import org.nanfeng.common.state.State;
 import org.nanfeng.common.util.resource.Resource;
 
-public abstract class AbstractAction extends Action implements State{
+public abstract class AbstractAction extends Action implements State {
 	private Context context;
 	private Resource resource;
 
-	public AbstractAction(Resource resource,String text) {
+	public AbstractAction(Resource resource, String text) {
 		super(text);
 		this.resource = resource;
 		context = new ContextImpl();
 	}
 
 	public abstract int getStyle();
-	
-	public Resource getResource() {
-		return resource;
+
+	public String getResourceStr(String key) {
+		return resource.getString(key);
 	}
+
 	public Context getContext() {
 		return context;
 	}
 
 	public void stateChanged(Object state) {
-		
+
 	}
 
 }
