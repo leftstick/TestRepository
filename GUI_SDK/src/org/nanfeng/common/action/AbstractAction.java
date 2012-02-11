@@ -1,5 +1,8 @@
 package org.nanfeng.common.action;
 
+import java.util.List;
+import java.util.Locale;
+
 import org.eclipse.jface.action.Action;
 import org.nanfeng.common.context.Context;
 import org.nanfeng.common.context.impl.ContextImpl;
@@ -22,8 +25,16 @@ public abstract class AbstractAction extends Action implements State {
 		return resource.getString(key);
 	}
 
+	public List<String> getKeys(String startWith) {
+		return resource.getKeys(startWith);
+	}
+
 	public Context getContext() {
 		return context;
+	}
+
+	public Locale getLocale() {
+		return resource.getCurrentLanguage();
 	}
 
 	public void stateChanged(Object state) {

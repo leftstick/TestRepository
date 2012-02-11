@@ -45,10 +45,12 @@ public class ShellRunner {
 		consoleHandle = new BaseOutConsoleHandle();
 	}
 
-	public void asyncRun() {
+	public void asyncRun(final Runnable callback) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				ShellRunner.this.run();
+				if (callback != null)
+					callback.run();
 			}
 		});
 		t.start();

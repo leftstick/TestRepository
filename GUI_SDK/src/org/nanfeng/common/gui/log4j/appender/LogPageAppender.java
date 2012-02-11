@@ -4,8 +4,9 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.nanfeng.common.gui.LogPage;
+import org.nanfeng.common.util.message.ConsoleHandle;
 
-public class LogPageAppender extends AppenderSkeleton {
+public class LogPageAppender extends AppenderSkeleton implements ConsoleHandle {
 
 	public static LogPageAppender appender;
 	private LogPage log;
@@ -38,5 +39,13 @@ public class LogPageAppender extends AppenderSkeleton {
 			log.append(Logger.getRootLogger().getLevel().toString() + ":"
 					+ event.getMessage().toString() + "\n");
 		}
+	}
+
+	public void onOutRead(String message, boolean isErrorOut) {
+		if (log != null) {
+			log.append(Logger.getRootLogger().getLevel().toString() + ":"
+					+ message + "\n");
+		}
+
 	}
 }

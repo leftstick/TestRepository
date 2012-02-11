@@ -19,6 +19,14 @@ public class TextHandle implements ConsoleHandle {
 		return text;
 	}
 
+	public void layout() {
+		text.getParent().layout();
+	}
+
+	public void clear() {
+		text.setText("");
+	}
+
 	public void onOutRead(final String message, boolean isErrorOut) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {

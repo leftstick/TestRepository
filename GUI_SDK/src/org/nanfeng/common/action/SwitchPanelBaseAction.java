@@ -2,7 +2,6 @@ package org.nanfeng.common.action;
 
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.nanfeng.common.action.AbstractAction;
 import org.nanfeng.common.gui.MainFrame;
 import org.nanfeng.common.util.resource.Resource;
 
@@ -27,6 +26,11 @@ public abstract class SwitchPanelBaseAction extends AbstractAction {
 			child.getParent().layout();
 		}
 		operation();
+	}
+
+	public void setStateStr(String str) {
+		getContext().getData(MainFrame.PARENT, MainFrame.class)
+				.notifyLineState(str);
 	}
 
 	public abstract void operation();
