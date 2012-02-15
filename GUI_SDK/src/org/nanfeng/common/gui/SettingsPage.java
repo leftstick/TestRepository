@@ -248,7 +248,7 @@ public class SettingsPage extends Composite {
 					return obj.key;
 				case 1:
 					if (style == RADIO_COLUMN) {
-						return (Boolean) obj.value == true ? "âˆš" : "";
+						return (Boolean) obj.value == true ? "¡Ì" : "";
 					}
 					return obj.value.toString();
 				default:
