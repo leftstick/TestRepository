@@ -42,6 +42,7 @@ public class SettingsPage extends Composite {
 	private String text2;
 	private List<ObjectProperty> parameters;
 	private ParameterChecker checker;
+	private Submit submit;
 	private int style;
 
 	public SettingsPage(Composite parent, String column1Text,
@@ -133,12 +134,17 @@ public class SettingsPage extends Composite {
 		this.checker = checker;
 	}
 
+	public Submit getSubmit() {
+		return submit;
+	}
+
 	public void setSubmit(String text, final Submit sub) {
+		submit = sub;
 		button_ok = new Button(this, SWT.PUSH);
 		button_ok.setText(text);
 		button_ok.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				submit(sub);
+				submit();
 			}
 		});
 		GridData data2 = new GridData(GridData.HORIZONTAL_ALIGN_END);
@@ -148,7 +154,9 @@ public class SettingsPage extends Composite {
 		button_ok.setLayoutData(data2);
 	}
 
-	private void submit(final Submit sub) {
+	private void submit() {
+		if (submit == null)
+			return;
 		switch (style) {
 		case TEXT_COLUMN:
 			List<Object> list = new ArrayList<Object>();
@@ -162,12 +170,12 @@ public class SettingsPage extends Composite {
 				} else
 					list.add(parameters.get(i).value);
 			}
-			sub.run(list);
+			submit.run(list);
 			break;
 		case RADIO_COLUMN:
 			for (int i = 0; i < parameters.size(); i++) {
 				if ((Boolean) parameters.get(i).value) {
-					sub.run(i);
+					submit.run(i);
 					break;
 				}
 			}
@@ -240,7 +248,7 @@ public class SettingsPage extends Composite {
 					return obj.key;
 				case 1:
 					if (style == RADIO_COLUMN) {
-						return (Boolean) obj.value == true ? "¡Ì" : "";
+						return (Boolean) obj.value == true ? "âˆš" : "";
 					}
 					return obj.value.toString();
 				default:

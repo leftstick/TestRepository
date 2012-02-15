@@ -95,7 +95,7 @@ public class ShellRunner {
 	}
 
 	/**
-	 * @return »ñÈ¡»·¾³×Ö·û´®
+	 * @return ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½
 	 */
 	public String[] getEnvString() {
 		if (this.runProperties == null)
@@ -115,14 +115,14 @@ public class ShellRunner {
 
 	/**
 	 * 
-	 * @return »ñÈ¡µ±Ç°ÔËÐÐµÄÖ¸Áî.
+	 * @return ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ðµï¿½Ö¸ï¿½ï¿½.
 	 */
 	public String getRunCommand() {
 		return cmdline;
 	}
 
 	/**
-	 * Ïò½ø³ÌµÄÊäÈë¹ÜµÀÖÐÊäÈëÒ»¶ÎÐÅÏ¢.
+	 * ï¿½ï¿½ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ï¢.
 	 * 
 	 * @param messageCode
 	 * @throws IOException
@@ -136,7 +136,7 @@ public class ShellRunner {
 	}
 
 	/**
-	 * Ð´ÈëÒ»ÐÐÏûÏ¢.
+	 * Ð´ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ï¢.
 	 * 
 	 * @param message
 	 * @throws IOException
@@ -147,7 +147,7 @@ public class ShellRunner {
 	}
 
 	/**
-	 * Í£Ö¹½ø³Ì
+	 * Í£Ö¹ï¿½ï¿½ï¿½
 	 */
 	public void stopProcess() {
 		Process r = process;
@@ -166,14 +166,14 @@ public class ShellRunner {
 	}
 
 	/**
-	 * @return ½ø³ÌÊÇ·ñ»¹ÔÚÔËÐÐ
+	 * @return ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public boolean processIsRunning() {
 		return process != null;
 	}
 
 	/**
-	 * @return ·µ»Ø runProperties¡£
+	 * @return ï¿½ï¿½ï¿½ï¿½ runPropertiesï¿½ï¿½
 	 */
 	public Properties getRuningEnv() {
 		return runProperties;
@@ -181,14 +181,14 @@ public class ShellRunner {
 
 	/**
 	 * @param runProperties
-	 *            ÒªÉèÖÃµÄ runProperties¡£
+	 *            Òªï¿½ï¿½ï¿½Ãµï¿½ runPropertiesï¿½ï¿½
 	 */
 	public void setRuningEnv(Properties runProperties) {
 		this.runProperties = runProperties;
 	}
 
 	/**
-	 * @return ·µ»Ø dir¡£
+	 * @return ï¿½ï¿½ï¿½ï¿½ dirï¿½ï¿½
 	 */
 	public File getRunpath() {
 		return dir;
@@ -196,7 +196,7 @@ public class ShellRunner {
 
 	/**
 	 * @param dir
-	 *            ÒªÉèÖÃµÄ dir¡£
+	 *            Òªï¿½ï¿½ï¿½Ãµï¿½ dirï¿½ï¿½
 	 */
 	public void setRunpath(File dir) {
 		this.dir = dir;
@@ -249,7 +249,7 @@ public class ShellRunner {
 	}
 
 	/**
-	 * @return ·µ»Ø lastExitValue¡£
+	 * @return ï¿½ï¿½ï¿½ï¿½ lastExitValueï¿½ï¿½
 	 */
 	public int getLastExitValue() {
 		return lastExitValue;
