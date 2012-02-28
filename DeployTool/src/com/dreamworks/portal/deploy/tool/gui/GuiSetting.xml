@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Managers>
+	<MenuManager nameKey="menu.file" shortcut="F">
+		<Action nameKey="menu.file.tomcat">com.dreamworks.portal.deploy.tool.action.impl.TomcatAction
+		</Action>
+		<Action nameKey="menu.file.exit">com.dreamworks.portal.deploy.tool.action.impl.ExitAction
+		</Action>
+	</MenuManager>
+	<MenuManager nameKey="menu.deploy" shortcut="D">
+		<Action nameKey="menu.deploy.deploynewpackage">com.dreamworks.portal.deploy.tool.action.impl.DeployAction
+		</Action>
+	</MenuManager>
+	<MenuManager nameKey="menu.preferences" shortcut="P">
+		<Action nameKey="menu.preferences.options" shortcut="CTRL+O">com.dreamworks.portal.deploy.tool.action.impl.OptionsAction
+		</Action>
+	</MenuManager>
+	<StateLineManager>com.dreamworks.portal.deploy.tool.state.StateLine
+	</StateLineManager>
+</Managers>

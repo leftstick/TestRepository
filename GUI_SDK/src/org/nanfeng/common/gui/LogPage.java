@@ -41,7 +41,16 @@ public class LogPage extends Composite {
 	public void append(final String message) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				text.append(message);
+				text.append(message + "\n");
+			}
+		});
+	}
+
+	public void append(final String message, final boolean isErrorOut) {
+		Display.getDefault().asyncExec(new Runnable() {
+			public void run() {
+				text.append((isErrorOut ? "ERROR" : "INFO") + " : " + message
+						+ "\n");
 			}
 		});
 	}

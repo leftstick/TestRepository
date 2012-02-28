@@ -27,10 +27,11 @@ public class TextHandle implements ConsoleHandle {
 		text.setText("");
 	}
 
-	public void onOutRead(final String message, boolean isErrorOut) {
+	public void onOutRead(final String message, final boolean isErrorOut) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				text.append(message + "\n");
+				text.append((isErrorOut ? "ERROR" : "INFO") + ":" + message
+						+ "\n");
 			}
 		});
 

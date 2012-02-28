@@ -1,0 +1,22 @@
+<project name="DeployTool" default="Build" basedir=".">
+	<property name="build.dir" value="./bin" />
+	<property name="version" value="1.0" />
+	<property name="out.dir" value="./target"/>
+	<property name="out.file" value="${out.dir}/deploy-tool.jar" />
+	<target name="Build">
+		<delete file="${out.file}" />
+		<delete file="${out.dir}" />
+		<antcall target="dist" />
+	</target>
+	<target name="dist">
+		<mkdir dir="${out.dir}"/>
+		<jar jarfile="${out.file}" basedir="${build.dir}">
+			<include name="**/*" />
+			<manifest>
+				<attribute name="Manifest-Version" value="${version}" />
+				<attribute name="Main-Class" value="com.dreamworks.portal.deploy.tool.gui.DeployTool" />
+				<attribute name="Class-Path" value="./libs/GUI-SDK-1.0.jar ./libs/commons-lang3-3.0.1.jar ./libs/dom4j-1.6.1.jar ./libs/log4j-1.2.16.jar ./libs/commons-beanutils-1.8.3.jar ./libs/commons-httpclient.jar ./libs/commons-logging-1.1.1.jar ./libs/commons-codec-1.5.jar ./libs/org.eclipse.core.commands.jar ./libs/org.eclipse.equinox.common.jar ./libs/org.eclipse.jface.jar ./libs/org.eclipse.osgi.jar ./libs/org.eclipse.ui.workbench.jar ./libs/swt.jar ./libs/commons-io-2.0.1.jar" />
+			</manifest>
+		</jar>
+	</target>
+</project>

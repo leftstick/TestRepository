@@ -1,5 +1,6 @@
 package org.nanfeng.common.action;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,6 +24,10 @@ public abstract class AbstractAction extends Action implements State {
 
 	public String getResourceStr(String key) {
 		return resource.getString(key);
+	}
+
+	public String getResourceStr(String key, Object[] params) {
+		return MessageFormat.format(resource.getString(key), params);
 	}
 
 	public List<String> getKeys(String startWith) {

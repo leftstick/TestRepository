@@ -36,15 +36,15 @@ public class LogPageAppender extends AppenderSkeleton implements ConsoleHandle {
 
 	protected void append(final LoggingEvent event) {
 		if (log != null) {
-			log.append(Logger.getRootLogger().getLevel().toString() + ":"
-					+ event.getMessage().toString() + "\n");
+			log.append(Logger.getRootLogger().getLevel().toString() + " : "
+					+ event.getMessage().toString());
 		}
 	}
 
 	public void onOutRead(String message, boolean isErrorOut) {
 		if (log != null) {
-			log.append(Logger.getRootLogger().getLevel().toString() + ":"
-					+ message + "\n");
+			log.append(Logger.getRootLogger().getLevel().toString() + " : "
+					+ message);
 		}
 
 	}

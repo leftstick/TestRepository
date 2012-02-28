@@ -2,11 +2,12 @@ package org.nanfeng.common.gui;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
 public class DialogFactory {
-	public static int openError(Shell parent, String title, String buttonOkText,
-			String message) {
+	public static int openError(Shell parent, String title,
+			String buttonOkText, String message) {
 		MessageDialog md = new MessageDialog(parent, title, null, message,
 				MessageDialog.ERROR, new String[] { buttonOkText }, 0);
 		if (md.getShell() == null)
@@ -49,6 +50,12 @@ public class DialogFactory {
 				(parent.getBounds().height - md.getShell().getBounds().height)
 						/ 2 + parent.getBounds().y);
 		return convert(md.open());
+	}
+
+	public static String openFileDialog(Shell parent) {
+		FileDialog fd = new FileDialog(parent, SWT.OPEN);
+		fd.setFilterExtensions(new String[] { "*.war" });
+		return fd.open();
 	}
 
 	public static int convert(int src) {

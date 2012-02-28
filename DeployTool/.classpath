@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_24"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.swt"/>
+	<classpathentry kind="var" path="DOM4J_HOME/dom4j-1.6.1.jar" sourcepath="/DOM4J_HOME/src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/GUI_SDK"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/apache-log4j-1.2.16/log4j-1.2.16.jar"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-httpclient-3.1/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-logging-1.1.1/commons-logging-1.1.1.jar" sourcepath="/APACHE_HOME/commons-logging-current-bin/commons-logging-1.1.1/commons-logging-1.1.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/xhaozuo/Documents/Technology/Apache/commons-logging-current-bin/commons-logging-1.1.1/site/apidocs/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-io-2.0.1/commons-io-2.0.1.jar" sourcepath="/APACHE_HOME/Library/commons-io-2.0.1/commons-io-2.0.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/D:/综合/学习资料/编程资料/Apache/Library/commons-io-2.0.1/commons-io-2.0.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-beanutils-1.8.3/commons-beanutils-1.8.3.jar"/>
+	<classpathentry kind="var" path="APACHE_HOME/Library/commons-codec-1.5/commons-codec-1.5.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
