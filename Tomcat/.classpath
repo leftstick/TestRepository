@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_20"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/annotations-api.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/catalina.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/catalina-ant.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/catalina-ha.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/catalina-tribes.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/el-api.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/jasper.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/jasper-el.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/jasper-jdt.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/tomcat-coyote.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/tomcat-dbcp.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/tomcat-i18n-es.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/tomcat-i18n-fr.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/lib/tomcat-i18n-ja.jar"/>
+	<classpathentry kind="lib" path="D:/WorkSpace/WorkKit/apacheKit/apache-tomcat-6.0.18/bin/tomcat-juli.jar"/>
+	<classpathentry kind="lib" path="D:/综合/学习资料/编程资料/Apache/Library/commons-beanutils-1.8.3/commons-beanutils-1.8.3.jar" sourcepath="C:/Users/Administrator/.m2/repository/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3-sources.jar"/>
+	<classpathentry kind="lib" path="D:/综合/学习资料/编程资料/Apache/Library/commons-logging-1.1.1/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

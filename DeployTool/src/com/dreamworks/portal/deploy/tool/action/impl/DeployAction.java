@@ -38,6 +38,12 @@ public class DeployAction extends SwitchPanelBaseAction {
 		logPage.setButtonText(0, getResourceStr("menu.deploy.open"));
 		logPage.addSubmit(0, new Submit() {
 			public void run(Object args) {
+				if (!Config.getConfig().isTomcatFilled()) {
+					logPage.append(
+							getResourceStr("message.preferences.catalinaHomePath.non"),
+							true);
+					return;
+				}
 				logPage.clear();
 				String path = DialogFactory.openFileDialog(logPage.getShell());
 				if (path == null) {
