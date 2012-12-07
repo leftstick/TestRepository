@@ -66,7 +66,17 @@ public enum MenuType {
      * </ul>
      * </p>
      */
-    CASCADE(SWT.CASCADE);
+    CASCADE(SWT.CASCADE),
+    /**
+     * Style constant for menu bar behavior (value is 1&lt;&lt;1).
+     * <p>
+     * <b>Used By:</b>
+     * <ul>
+     * <li><code>Menu</code></li>
+     * </ul>
+     * </p>
+     */
+    BAR(SWT.BAR);
 
     private int type;
 
@@ -74,6 +84,9 @@ public enum MenuType {
         this.type = type;
     }
 
+    /**
+     * @return type of Menu
+     */
     public int getType() {
         return this.type;
     }

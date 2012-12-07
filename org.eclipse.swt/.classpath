@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="var" path="SWT/swt.jar" sourcepath="/SWT/src.zip"/>
+	<classpathentry exported="true" kind="var" path="SWT/x86_64/swt.jar" sourcepath="/SWT/x86_64/src.zip"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
