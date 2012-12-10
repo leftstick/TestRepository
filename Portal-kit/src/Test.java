@@ -1,13 +1,19 @@
-import java.io.File;
-
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 /**
  * The purpose of this class is main entrance of this toolkit.
@@ -15,67 +21,81 @@ import org.eclipse.swt.widgets.TreeItem;
 public class Test {
     public static void main(String[] args) {
         Display display = new Display();
-        Shell shell = new Shell(display);
+        final Shell shell = new Shell(display);
+        shell.setText("Text Table Editor");
+
         shell.setLayout(new FillLayout());
 
-        // Construct a Tree object.  
-        final Tree tree = new Tree(shell, SWT.BORDER | SWT.CHECK);
+        final Table table = new Table(shell, SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
 
-        File rootFile = new File("C:\\Users\\ehaozuo\\workenv\\msdk\\portal-team");
+        for (int i = 0; i < 5; i++) {
+            TableColumn column = new TableColumn(table, SWT.CENTER);
+            column.setText("Column " + (i + 1));
+            column.pack();
+        }
 
-        // Add root file to the tree.  
-        TreeItem root = new TreeItem(tree, SWT.NONE);
+        for (int i = 0; i < 5; i++) {
+            final TableItem item = new TableItem(table, SWT.NONE);
+        }
 
-        // Set the text displayed on the tree node.  
-        root.setText(rootFile.getName());
+        final TableEditor editor = new TableEditor(table);
+        editor.horizontalAlignment = SWT.LEFT;
+        editor.grabHorizontal = true;
 
-        // Set the data type of the tree node.  
-        root.setData(rootFile);
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseDown(MouseEvent event) {
+                Control old = editor.getEditor();
+                if (old != null)
+                    old.dispose();
 
-        // Add a empty sub-node to make the node can be expanded.  
-        new TreeItem(root, SWT.NONE);
+                Point pt = new Point(event.x, event.y);
 
-        tree.addListener(SWT.Expand, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                // Get the event-source  
-                TreeItem root = (TreeItem) event.item;
-
-                // Dispose the empty node  
-                TreeItem[] items = root.getItems();
-                for (TreeItem item : items) {
-                    if (item.getData() == null) {
-                        item.dispose();
+                final TableItem item = table.getItem(pt);
+                if (item == null) {
+                    return;
+                }
+                int column = -1;
+                for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+                    Rectangle rect = item.getBounds(i);
+                    if (rect.contains(pt)) {
+                        column = i;
+                        break;
                     }
                 }
 
-                File rootFile = (File) root.getData();
-                File[] files = rootFile.listFiles();
-
-                for (File file : files) {
-                    if (file.getName().startsWith(".")) {
-                        continue;
-                    }
-
-                    TreeItem item = new TreeItem(root, SWT.NONE);
-                    item.setText(file.getName());
-                    item.setData(file);
-
-                    if (file.isDirectory()) {
-                        // Add a empty sub-node to make the node can be  
-                        // expanded.  
-                        System.out.println(file.getAbsolutePath());
-                        new TreeItem(item, SWT.NONE);
-                    }
+                if (column == -1) {
+                    return;
                 }
+                final Text text = new Text(table, SWT.NONE);
+                text.setForeground(item.getForeground());
+
+                text.setText(item.getText(column));
+                text.setForeground(item.getForeground());
+                text.selectAll();
+                text.setFocus();
+
+                editor.minimumWidth = text.getBounds().width;
+
+                editor.setEditor(text, item, column);
+
+                final int col = column;
+                text.addModifyListener(new ModifyListener() {
+                    public void modifyText(ModifyEvent event) {
+                        item.setText(col, text.getText());
+                        System.out.println("Text modified to " + text.getText());
+                    }
+                });
             }
         });
 
         shell.pack();
         shell.open();
         while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
+            if (!display.readAndDispatch()) {
                 display.sleep();
+            }
         }
         display.dispose();
     }
