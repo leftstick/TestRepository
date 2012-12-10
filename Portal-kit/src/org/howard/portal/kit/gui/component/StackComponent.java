@@ -12,4 +12,10 @@ public interface StackComponent {
      * @return created composite
      */
     public Composite ceatePanel(Composite composite);
+
+    /**
+     * close the composite
+     */
+    public void close();
+
 }
