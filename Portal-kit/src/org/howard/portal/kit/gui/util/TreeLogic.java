@@ -2,6 +2,8 @@ package org.howard.portal.kit.gui.util;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +21,9 @@ public class TreeLogic {
     private TreeItem rootItem;
     private Listener listener;
     private FileFilter filter;
+    private SelectCallback callback;
+
+    private List<TreeItem> selection;
 
     /**
      * Creates a new instance of <code>TreeLogic</code>.
@@ -38,6 +43,7 @@ public class TreeLogic {
                 return subFiles.length == 1;
             }
         };
+        selection = new ArrayList<TreeItem>();
     }
 
     /**
@@ -56,11 +62,11 @@ public class TreeLogic {
      * @param rootFile
      */
     public void createTree(Composite parent, File rootFile) {
-        ObjectUtil.checkNull(rootFile, "rootFile cannot be null when creating Tree");
         if (tree == null)
             tree = new Tree(parent, SWT.BORDER | SWT.CHECK);
         // Add root file to the tree.
-        this.setRoot(rootFile);
+        if (rootFile != null)
+            this.setRoot(rootFile);
     }
 
     private void setListener() {
@@ -69,24 +75,11 @@ public class TreeLogic {
             public void handleEvent(Event event) {
                 // Get the event-source  
                 TreeItem parent = (TreeItem) event.item;
-
-                // Dispose the empty node  
+                // Dispose the empty node 
                 TreeItem[] items = parent.getItems();
                 for (TreeItem item : items) {
-                    item.dispose();
-                }
-
-                File parentFile = (File) parent.getData();
-                File[] files = parentFile.listFiles(filter);
-
-                for (File file : files) {
-                    TreeItem item = new TreeItem(parent, SWT.NONE);
-                    item.setText(file.getName());
-                    item.setData(file);
-
-                    if (hasSubElement(file)) {
-                        new TreeItem(item, SWT.NONE);
-                    }
+                    if (item.getData() == null)
+                        item.dispose();
                 }
             }
         });
@@ -97,22 +90,39 @@ public class TreeLogic {
                 if (event.detail == SWT.CHECK) {
                     TreeItem item = (TreeItem) event.item;
                     boolean state = item.getChecked();
+                    selection.clear();
                     checkChildren(item, state);
+                    if (callback != null) {
+                        if (state)
+                            callback.onSelected(selection);
+                        else
+                            callback.onCanceled(selection);
+                    }
+
                     checkParents(item, state);
                 }
             }
         });
     }
 
-    private static void checkChildren(TreeItem item, boolean state) {
+    private void checkChildren(TreeItem item, boolean state) {
         item.setChecked(state);
         TreeItem[] items = item.getItems();
+        if (items.length == 0 && callback != null) {
+            if (!"".equals(item.getText())) {
+                if (state) {
+                    selection.add(item);
+                } else {
+                    selection.add(item);
+                }
+            }
+        }
         for (TreeItem treeItem : items) {
             checkChildren(treeItem, state);
         }
     }
 
-    private static void checkParents(TreeItem item, boolean state) {
+    private void checkParents(TreeItem item, boolean state) {
         item.setChecked(state);
         TreeItem parent = item.getParentItem();
         if (parent != null) {
@@ -129,6 +139,35 @@ public class TreeLogic {
     }
 
     /**
+     * specified callback will be executed when treeItem is selected.
+     * 
+     * @param callback
+     */
+    public void setOnSelectCallback(SelectCallback callback) {
+        this.callback = callback;
+    }
+
+    private void initAllTreeItems(TreeItem treeItem) {
+        // Get the event-source  
+        TreeItem parent = treeItem;
+
+        File parentFile = (File) parent.getData();
+        File[] files = parentFile.listFiles(filter);
+
+        for (File file : files) {
+            TreeItem item = new TreeItem(parent, SWT.NONE);
+            item.setText(file.getName());
+            item.setData(file);
+
+            if (hasSubElement(file)) {
+                new TreeItem(item, SWT.NONE);
+                initAllTreeItems(item);
+            }
+        }
+
+    }
+
+    /**
      * set root to tree
      * 
      * @param rootFile
@@ -138,6 +177,7 @@ public class TreeLogic {
         if (rootItem == null) {
             rootItem = new TreeItem(tree, SWT.NONE);
         }
+        rootItem.removeAll();
         rootItem.setText(rootFile.getName());
         rootItem.setData(rootFile);
         if (listener != null)
@@ -146,6 +186,7 @@ public class TreeLogic {
             // Add a empty sub-node to make the node can be expanded.  
             new TreeItem(rootItem, SWT.NONE);
             setListener();
+            initAllTreeItems(rootItem);
         }
     }
 
