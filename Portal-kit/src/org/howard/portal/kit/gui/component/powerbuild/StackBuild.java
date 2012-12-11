@@ -64,8 +64,6 @@ public class StackBuild implements StackComponent, Observer {
         Text tConsole = CompositeFactory.createReadOnlyText(eastSouth);
 
         stackLayout = ((StackLayout) composite.getLayout());
-        stackLayout.topControl = mainForm;
-        mainForm.layout();
         return mainForm;
     }
 
@@ -80,5 +78,10 @@ public class StackBuild implements StackComponent, Observer {
     public void update(Observable o, Object arg) {
         String designPath = ((PowerBuildConfig) o).getDesignPath();
         treeLogic.setRoot(new File(designPath));
+    }
+
+    @Override
+    public void show() {
+        mainForm.setVisible(true);
     }
 }

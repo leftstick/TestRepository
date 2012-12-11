@@ -18,4 +18,9 @@ public interface StackComponent {
      */
     public void close();
 
+    /**
+     * set this component to the top level
+     */
+    public void show();
+
 }

@@ -46,6 +46,15 @@ public class PortalKit {
     }
 
     /**
+     * set specified composite to the top of panel
+     * 
+     * @param composite
+     */
+    public void setToTop(Composite composite) {
+        centralLayout.topControl = composite;
+    }
+
+    /**
      * Add a new component into stack
      * 
      * @param component
@@ -69,6 +78,8 @@ public class PortalKit {
      * @return added top MenuItem
      */
     public MenuItem addMenuItem(String text) {
+        if (!menuItemLogic.isMenuBarCreated())
+            this.createMenuBar();
         return this.addMenuItem(text, null, null);
     }
 
@@ -112,8 +123,9 @@ public class PortalKit {
      * @param text
      */
     public void setTextToStatusbar(String text) {
-        if (statusBarLogic.isStatusBarCreated())
-            statusBarLogic.setText(text);
+        if (!statusBarLogic.isStatusBarCreated())
+            createStatusbar(text);
+        statusBarLogic.setText(text);
     }
 
     /**
