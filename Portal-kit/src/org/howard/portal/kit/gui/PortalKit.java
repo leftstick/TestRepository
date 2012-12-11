@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.howard.portal.kit.gui.component.StackComponent;
-import org.howard.portal.kit.gui.util.MenuItemLogic;
-import org.howard.portal.kit.gui.util.StatusBarLogic;
+import org.howard.portal.kit.gui.factory.MenuItemLogic;
+import org.howard.portal.kit.gui.factory.StatusBarLogic;
 
 /**
  * The purpose of this class is main entrance of this toolkit.

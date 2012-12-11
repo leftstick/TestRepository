@@ -1,4 +1,4 @@
-package org.howard.portal.kit.gui.component;
+package org.howard.portal.kit.gui.component.powerbuild;
 
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -6,8 +6,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.howard.portal.kit.gui.util.CompositeFactory;
-import org.howard.portal.kit.gui.util.TableLogic;
+import org.howard.portal.kit.config.PowerBuildConfig;
+import org.howard.portal.kit.gui.factory.CompositeFactory;
+import org.howard.portal.kit.gui.factory.DialogFactory;
+import org.howard.portal.kit.gui.factory.TableLogic;
+import org.howard.portal.kit.gui.listener.TextChanedCallback;
 
 /**
  * The purpose of this class is to provide Settings component in
@@ -18,8 +21,11 @@ public class SettingsInStackBuild {
     private Composite stack;
     private Composite buildPage;
     private Composite settingsPage;
+    private Button bSave;
 
     private TableLogic tableLogic;
+
+    private PowerBuildConfig config;
 
     /**
      * Creates a new instance of <code>SettingsInStackBuild</code>.
@@ -27,6 +33,7 @@ public class SettingsInStackBuild {
      * @param parent
      */
     public SettingsInStackBuild(Composite parent) {
+        config = PowerBuildConfig.getConfig();
         mainSettings = CompositeFactory.createGridComposite(parent, 1);
         stack = CompositeFactory.createStackComposite(mainSettings);
         //side 1
@@ -40,8 +47,6 @@ public class SettingsInStackBuild {
             }
         });
 
-        Button bFwBuild = CompositeFactory.createRadioButton(cBuildTitle, "FW", null);
-        Button bMockBuild = CompositeFactory.createRadioButton(cBuildTitle, "Mock", null);
         Text tSelection = CompositeFactory.createReadOnlyText(buildPage);
         Composite cBuildBottom = CompositeFactory.createHorFillComposite(buildPage);
 
@@ -53,7 +58,20 @@ public class SettingsInStackBuild {
         settingsPage = CompositeFactory.createGridComposite(stack, 1);
         Composite csetTitle = CompositeFactory.createHorFillComposite(settingsPage);
 
-        Button bSave = CompositeFactory.createPushButton(csetTitle, "Save", null);
+        bSave = CompositeFactory.createPushButton(csetTitle, "Save", new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    if (config.resetConfig(tableLogic.getResult()))
+                        DialogFactory.openInfo(mainSettings.getShell(), "Save success!");
+                    else
+                        DialogFactory.openInfo(mainSettings.getShell(), "Nothing changed!");
+                } catch (RuntimeException ex) {
+                    DialogFactory.openError(mainSettings.getShell(), ex.getMessage());
+                }
+            }
+        });
+        bSave.setEnabled(false);
         Button bBack = CompositeFactory.createPushButton(csetTitle, "Back", new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -61,12 +79,18 @@ public class SettingsInStackBuild {
                 stack.layout();
             }
         });
-        tableLogic= new TableLogic(settingsPage);
+        tableLogic = new TableLogic(settingsPage);
         tableLogic.addTableHeader("Key", false);
         tableLogic.addTableHeader("Value", true);
-        tableLogic.addTableColumn("Tomcat");
-        tableLogic.addTableColumn("");
+        tableLogic.addTableColumn("Design Path", "");
+        tableLogic.addTableColumn("Deploy Path");
         tableLogic.prepareTable();
+        tableLogic.setCallback(new TextChanedCallback() {
+            @Override
+            public void onChanged(boolean isChanged) {
+                bSave.setEnabled(isChanged);
+            }
+        });
 
         ((StackLayout) stack.getLayout()).topControl = buildPage;
     }

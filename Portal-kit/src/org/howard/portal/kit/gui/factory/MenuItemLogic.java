@@ -1,4 +1,4 @@
-package org.howard.portal.kit.gui.util;
+package org.howard.portal.kit.gui.factory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.howard.portal.kit.gui.util;
+package org.howard.portal.kit.gui.factory;
 
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;

@@ -1,7 +1,9 @@
-package org.howard.portal.kit.gui.util;
+package org.howard.portal.kit.gui.factory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -20,6 +22,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.howard.portal.kit.gui.listener.TextChanedCallback;
 
 /**
  * The purpose of this class is to provide a simple logic module to
@@ -30,6 +33,9 @@ public class TableLogic {
     private boolean isHeadSet;
     private List<TableColumn> columns;
     private List<Boolean> editables;
+
+    private TextChanedCallback callback;
+    private Map<Integer, String> originalText;
 
     /**
      * Creates a new instance of <code>TableLogic</code>.
@@ -43,6 +49,7 @@ public class TableLogic {
         table.setLinesVisible(true);
         columns = new ArrayList<TableColumn>();
         editables = new ArrayList<Boolean>();
+        originalText = new HashMap<Integer, String>();
     }
 
     /**
@@ -74,13 +81,13 @@ public class TableLogic {
     }
 
     /**
-     * @param text header text of current column
+     * @param texts content text of current column
      */
-    public void addTableColumn(String text) {
+    public void addTableColumn(String... texts) {
         if (!isHeadSet)
             throw new NullPointerException("Header hasn't set yet.");
         TableItem item = new TableItem(table, SWT.LEFT);
-        item.setText(text);
+        item.setText(texts);
     }
 
     /**
@@ -116,11 +123,10 @@ public class TableLogic {
                 if (!editables.get(column)) {
                     return;
                 }
+                if (!originalText.containsKey(column))
+                    originalText.put(column, item.getText(column));
                 final Text text = new Text(table, SWT.NONE);
-                text.setForeground(item.getForeground());
-
                 text.setText(item.getText(column));
-                text.setForeground(item.getForeground());
                 text.selectAll();
                 text.setFocus();
 
@@ -133,7 +139,12 @@ public class TableLogic {
                     @Override
                     public void modifyText(ModifyEvent me) {
                         item.setText(col, text.getText());
-                        System.out.println("Text modified to " + text.getText());
+                        if (callback != null) {
+                            if (!originalText.get(col).equals(text.getText()))
+                                callback.onChanged(true);
+                            else
+                                callback.onChanged(false);
+                        }
                     }
                 });
             }
@@ -149,5 +160,52 @@ public class TableLogic {
             }
         });
         table.pack();
+    }
+
+    /**
+     * @return result of this table
+     */
+    public List<List<String>> getResult() {
+        List<List<String>> list = new ArrayList<List<String>>();
+        TableItem[] items = table.getItems();
+        for (int i = 0; i < items.length; i++) {
+            TableItem item = items[i];
+            List<String> ilist = new ArrayList<String>();
+            for (int j = 0; j < editables.size(); j++) {
+                ilist.add(item.getText(j));
+            }
+            if (!ilist.isEmpty())
+                list.add(ilist);
+        }
+        return list;
+    }
+
+    /**
+     * Something
+     */
+    public void onShow() {
+        originalText.clear();
+    }
+
+    /**
+     * @param callback The callback to set.
+     */
+    public void setCallback(TextChanedCallback callback) {
+        this.callback = callback;
+    }
+
+    /**
+     * reset all the data that inclueded in the table
+     * 
+     * @param list
+     */
+    public void resetData(List<List<String>> list) {
+        for (int i = 0; i < list.size(); i++) {
+            List<String> ilist = list.get(i);
+            TableItem item = table.getItem(i);
+            for (int j = 0; j < ilist.size(); j++) {
+                item.setText(j, ilist.get(j));
+            }
+        }
     }
 }

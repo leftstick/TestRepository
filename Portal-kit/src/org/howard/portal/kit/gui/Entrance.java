@@ -2,7 +2,7 @@ package org.howard.portal.kit.gui;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.howard.portal.kit.gui.component.StackBuild;
+import org.howard.portal.kit.gui.component.powerbuild.StackBuild;
 
 public class Entrance {
     public static void main(String[] args) {

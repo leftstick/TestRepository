@@ -1,4 +1,4 @@
-package org.howard.portal.kit.gui.util;
+package org.howard.portal.kit.util;
 
 /**
  * The purpose of this class is to provide several useful APIs to
