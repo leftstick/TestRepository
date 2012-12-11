@@ -1,5 +1,7 @@
 package org.howard.portal.kit.gui.component.powerbuild;
 
+import java.util.List;
+
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,11 +41,13 @@ public class SettingsInStackBuild {
         //side 1
         buildPage = CompositeFactory.createGridComposite(stack, 1);
         Composite cBuildTitle = CompositeFactory.createHorFillComposite(buildPage);
-        Button bSettings = CompositeFactory.createPushButton(cBuildTitle, "Settings", new SelectionAdapter() {
+        CompositeFactory.createPushButton(cBuildTitle, "Settings", new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 ((StackLayout) stack.getLayout()).topControl = settingsPage;
                 stack.layout();
+                tableLogic.onShow();
+                bSave.setEnabled(false);
             }
         });
 
@@ -62,16 +66,18 @@ public class SettingsInStackBuild {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    if (config.resetConfig(tableLogic.getResult()))
+                    List<List<String>> result = tableLogic.getResult();
+                    if (config.resetConfig(result)) {
                         DialogFactory.openInfo(mainSettings.getShell(), "Save success!");
-                    else
+                        tableLogic.resetData(result);
+                        bSave.setEnabled(false);
+                    } else
                         DialogFactory.openInfo(mainSettings.getShell(), "Nothing changed!");
                 } catch (RuntimeException ex) {
                     DialogFactory.openError(mainSettings.getShell(), ex.getMessage());
                 }
             }
         });
-        bSave.setEnabled(false);
         Button bBack = CompositeFactory.createPushButton(csetTitle, "Back", new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {

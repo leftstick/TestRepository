@@ -4,7 +4,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.howard.portal.kit.gui.component.powerbuild.StackBuild;
 
+/**
+ * Entrance to portal kit
+ */
 public class Entrance {
+    /**
+     * @param args
+     */
     public static void main(String[] args) {
 
         PortalKit kit = new PortalKit();

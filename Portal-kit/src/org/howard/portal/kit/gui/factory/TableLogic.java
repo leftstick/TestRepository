@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -35,7 +36,7 @@ public class TableLogic {
     private List<Boolean> editables;
 
     private TextChanedCallback callback;
-    private Map<Integer, String> originalText;
+    private OriginalText originalText;
 
     /**
      * Creates a new instance of <code>TableLogic</code>.
@@ -49,7 +50,7 @@ public class TableLogic {
         table.setLinesVisible(true);
         columns = new ArrayList<TableColumn>();
         editables = new ArrayList<Boolean>();
-        originalText = new HashMap<Integer, String>();
+        originalText = new OriginalText();
     }
 
     /**
@@ -90,6 +91,16 @@ public class TableLogic {
         item.setText(texts);
     }
 
+    private void resetOriginalText() {
+        TableItem[] items = table.getItems();
+        for (int i = 0; i < items.length; i++) {
+            for (int j = 0; j < editables.size(); j++) {
+                if (editables.get(j))
+                    originalText.setSource(new Position(i, j), "");
+            }
+        }
+    }
+
     /**
      * 
      */
@@ -97,6 +108,7 @@ public class TableLogic {
         final TableEditor editor = new TableEditor(table);
         editor.horizontalAlignment = SWT.LEFT;
         editor.grabHorizontal = true;
+        resetOriginalText();
 
         table.addMouseListener(new MouseAdapter() {
             @Override
@@ -104,10 +116,8 @@ public class TableLogic {
                 Control old = editor.getEditor();
                 if (old != null)
                     old.dispose();
-
                 Point pt = new Point(event.x, event.y);
-
-                final TableItem item = table.getItem(pt);
+                final TableItem item = table.getItem(table.getSelectionIndex());
                 if (item == null) {
                     return;
                 }
@@ -120,11 +130,15 @@ public class TableLogic {
                     }
                 }
 
-                if (!editables.get(column)) {
+                if (column == -1 || !editables.get(column)) {
                     return;
                 }
-                if (!originalText.containsKey(column))
-                    originalText.put(column, item.getText(column));
+                final Position position = new Position(table.getSelectionIndex(), column);
+                final String txt = item.getText(column);
+                if (!originalText.containsKey(position)) {
+                    System.out.println("run it heere");
+                    originalText.setSource(position, txt);
+                }
                 final Text text = new Text(table, SWT.NONE);
                 text.setText(item.getText(column));
                 text.selectAll();
@@ -140,7 +154,8 @@ public class TableLogic {
                     public void modifyText(ModifyEvent me) {
                         item.setText(col, text.getText());
                         if (callback != null) {
-                            if (!originalText.get(col).equals(text.getText()))
+                            System.out.println("or[" + originalText.get(position) + "]" + "txt[" + text.getText() + "]");
+                            if (!originalText.get(position).equals(text.getText()))
                                 callback.onChanged(true);
                             else
                                 callback.onChanged(false);
@@ -181,10 +196,13 @@ public class TableLogic {
     }
 
     /**
-     * Something
+     * reset all the data.
      */
     public void onShow() {
-        originalText.clear();
+        for (Entry<Position, String> entry : originalText.getOriginalText().entrySet()) {
+            TableItem item = table.getItem(entry.getKey().row);
+            item.setText(entry.getKey().column, entry.getValue());
+        }
     }
 
     /**
@@ -195,7 +213,7 @@ public class TableLogic {
     }
 
     /**
-     * reset all the data that inclueded in the table
+     * reset all the data that included in the table
      * 
      * @param list
      */
@@ -205,7 +223,95 @@ public class TableLogic {
             TableItem item = table.getItem(i);
             for (int j = 0; j < ilist.size(); j++) {
                 item.setText(j, ilist.get(j));
+                Position p = new Position(i, j);
+                if (originalText.containsKey(p))
+                    originalText.setSource(p, ilist.get(j));
             }
+        }
+    }
+
+    /**
+     * The purpose of this class is to provide originalText source
+     * control
+     */
+    class OriginalText {
+        private Map<Position, String> source;
+
+        /**
+         * Creates a new instance of <code>OriginalText</code>.
+         */
+        OriginalText() {
+            source = new HashMap<Position, String>();
+        }
+
+        /**
+         * @param p position
+         * @param str text
+         */
+        void setSource(Position p, String str) {
+            for (Entry<Position, String> entry : source.entrySet()) {
+                if (entry.getKey().column == p.column && entry.getKey().row == p.row) {
+                    entry.setValue(str);
+                    return;
+                }
+            }
+            source.put(p, str);
+        }
+
+        /**
+         * @param p position
+         * @return if key contains
+         */
+        boolean containsKey(Position p) {
+            for (Entry<Position, String> entry : source.entrySet()) {
+                if (entry.getKey().column == p.column && entry.getKey().row == p.row)
+                    return true;
+            }
+            return false;
+        }
+
+        /**
+         * @param p position
+         * @return text
+         */
+        String get(Position p) {
+            for (Entry<Position, String> entry : source.entrySet()) {
+                if (entry.getKey().column == p.column && entry.getKey().row == p.row)
+                    return entry.getValue();
+            }
+            return null;
+        }
+
+        /**
+         * @return originalText source
+         */
+        public Map<Position, String> getOriginalText() {
+            return source;
+        }
+    }
+
+    /**
+     * The purpose of this class is to provide position information
+     */
+    class Position {
+        /**
+         * <code>row</code> of Table
+         */
+        int row;
+        /**
+         * <code>column</code> of Table
+         */
+        int column;
+
+        /**
+         * Creates a new instance of <code>Position</code>.
+         * 
+         * @param row
+         * @param col column
+         */
+        public Position(int row, int col) {
+            this.row = row;
+            this.column = col;
         }
     }
 }
