@@ -13,9 +13,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.howard.portal.kit.config.PowerBuildConfig;
+import org.howard.portal.kit.gui.PortalKit;
 import org.howard.portal.kit.gui.component.StackComponent;
+import org.howard.portal.kit.gui.component.powerbuild.ExecuteList.ExecuteItem;
+import org.howard.portal.kit.gui.factory.BuildStatus;
 import org.howard.portal.kit.gui.factory.CompositeFactory;
 import org.howard.portal.kit.gui.factory.TreeLogic;
+import org.howard.portal.kit.gui.listener.ExecutionCallback;
 import org.howard.portal.kit.gui.listener.SelectCallback;
 
 /**
@@ -28,13 +32,27 @@ public class StackBuild implements StackComponent, Observer {
     private TreeLogic treeLogic;
 
     private List<TreeItem> selection;
+    private SettingsInStackBuild settings;
+    private ExecuteList exeList;
+
+    private PortalKit kit;
 
     /**
      * Creates a new instance of <code>StackBuild</code>.
+     * 
+     * @param kit
      */
-    public StackBuild() {
+    public StackBuild(PortalKit kit) {
+        this.kit = kit;
         treeLogic = new TreeLogic();
         selection = new ArrayList<TreeItem>();
+        exeList = new ExecuteList();
+        exeList.setCallback(new ExecutionCallback() {
+            @Override
+            public void onChanged(ExecuteItem item) {
+                settings.setItem(item.itemText, item.status);
+            }
+        });
         PowerBuildConfig.getConfig().addObserver(this);
     }
 
@@ -49,6 +67,9 @@ public class StackBuild implements StackComponent, Observer {
             @Override
             public void onSelected(List<TreeItem> treeItem) {
                 selection.addAll(treeItem);
+                for (TreeItem item : treeItem) {
+                    settings.addItem(item, BuildStatus.NOTEXEC);
+                }
             }
 
             @Override
@@ -58,7 +79,8 @@ public class StackBuild implements StackComponent, Observer {
         });
 
         SashForm eastMainForm = CompositeFactory.createSashForm(mainForm, SWT.VERTICAL | SWT.BORDER, 1);
-        SettingsInStackBuild settings = new SettingsInStackBuild(eastMainForm);
+        settings = new SettingsInStackBuild(eastMainForm);
+        settings.setExeList(exeList);
 
         Composite eastSouth = CompositeFactory.createGridComposite(eastMainForm, 1);
         Text tConsole = CompositeFactory.createReadOnlyText(eastSouth);
@@ -76,12 +98,15 @@ public class StackBuild implements StackComponent, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        String designPath = ((PowerBuildConfig) o).getDesignPath();
-        treeLogic.setRoot(new File(designPath));
+        if (o instanceof PowerBuildConfig) {
+            String designPath = ((PowerBuildConfig) o).getDesignPath();
+            treeLogic.setRoot(new File(designPath));
+        }
     }
 
     @Override
     public void show() {
-        mainForm.setVisible(true);
+        kit.setTextToStatusbar("Power Build");
+        kit.setToTop(mainForm);
     }
 }

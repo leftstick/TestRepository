@@ -107,11 +107,16 @@ public class TreeLogic {
         });
     }
 
+    private String getAbsolutePath(TreeItem item) {
+        return ((File) item.getData()).getAbsolutePath();
+    }
+
     private void checkChildren(TreeItem item, boolean state) {
         item.setChecked(state);
         TreeItem[] items = item.getItems();
         if (items.length == 0 && callback != null) {
             if (!"".equals(item.getText())) {
+                item.setData("path", getAbsolutePath(item));
                 if (state) {
                     selection.add(item);
                 } else {

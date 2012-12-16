@@ -52,6 +52,7 @@ public class PortalKit {
      */
     public void setToTop(Composite composite) {
         centralLayout.topControl = composite;
+        composite.getParent().layout();
     }
 
     /**

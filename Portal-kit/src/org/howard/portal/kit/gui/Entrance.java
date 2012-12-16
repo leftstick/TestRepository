@@ -17,7 +17,7 @@ public class Entrance {
      */
     public Entrance() {
         kit = new PortalKit();
-        build = new StackBuild();
+        build = new StackBuild(kit);
         kit.addMenuItem("File");
         kit.addMenuItem("Exit", "File", new SelectionAdapter() {
             @Override
@@ -29,11 +29,11 @@ public class Entrance {
         kit.addMenuItem("Power Build", "Build", new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                kit.setToTop(cbuild);
+                build.show();
             }
         });
         kit.setTitle("PortalKit");
-        kit.setTextToStatusbar("kitddddddddddddddddddd");
+        kit.createStatusbar("");
     }
 
     public void show() {

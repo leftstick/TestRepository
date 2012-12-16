@@ -42,6 +42,7 @@ public class StatusBarLogic {
      */
     public void setText(String text) {
         statusbarLabel.setText(text);
+        statusbarLabel.pack();
     }
 
     /**

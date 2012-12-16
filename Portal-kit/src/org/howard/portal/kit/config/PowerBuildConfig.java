@@ -3,6 +3,9 @@ package org.howard.portal.kit.config;
 import java.io.File;
 import java.util.List;
 import java.util.Observable;
+import java.util.Properties;
+
+import org.howard.portal.kit.util.PropertiesUtil;
 
 /**
  * The purpose of this class is to provide configuration to power
@@ -12,6 +15,7 @@ public class PowerBuildConfig extends Observable {
     private String designPath;
     private String deployPath;
     private static PowerBuildConfig config;
+    private PropertiesUtil propUtil;
 
     /**
      * @return instance of PowerBuildConfig
@@ -25,6 +29,28 @@ public class PowerBuildConfig extends Observable {
             }
         }
         return config;
+    }
+
+    private PowerBuildConfig() {
+        propUtil = PropertiesUtil.getInstance();
+        Properties prop = propUtil.getProperties();
+        String designHome = null;
+        String deployHome = null;
+        if (prop.getProperty("designPath") == null && prop.getProperty("deployPath") == null) {
+            designHome = System.getenv("DESIGN_HOME");
+            deployHome = System.getenv("DEPLOY_HOME");
+            if (designHome != null)
+                designPath = designHome;
+            if (deployHome != null)
+                deployPath = deployHome;
+        } else {
+            designHome = prop.getProperty("designPath");
+            deployHome = prop.getProperty("deployPath");
+            if (designHome != null)
+                designPath = designHome;
+            if (deployHome != null)
+                deployPath = deployHome;
+        }
     }
 
     /**

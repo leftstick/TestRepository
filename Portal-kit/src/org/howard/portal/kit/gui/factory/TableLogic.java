@@ -44,7 +44,7 @@ public class TableLogic {
      * @param parent
      */
     public TableLogic(Composite parent) {
-        table = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
+        table = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION | SWT.BORDER);
         table.setLayoutData(new GridData(GridData.FILL_BOTH));
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -91,6 +91,19 @@ public class TableLogic {
         item.setText(texts);
     }
 
+    /**
+     * set text with specified row and col.
+     * 
+     * @param row
+     * @param col
+     * @param text
+     */
+    public void setTableColumn(int row, int col, String text) {
+        if (!isHeadSet)
+            throw new NullPointerException("Header hasn't set yet.");
+        table.getItem(row).setText(col, text);
+    }
+
     private void resetOriginalText() {
         TableItem[] items = table.getItems();
         for (int i = 0; i < items.length; i++) {
@@ -109,7 +122,6 @@ public class TableLogic {
         editor.horizontalAlignment = SWT.LEFT;
         editor.grabHorizontal = true;
         resetOriginalText();
-
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent event) {
@@ -117,6 +129,8 @@ public class TableLogic {
                 if (old != null)
                     old.dispose();
                 Point pt = new Point(event.x, event.y);
+                if (table.getSelectionIndex() < 0)
+                    return;
                 final TableItem item = table.getItem(table.getSelectionIndex());
                 if (item == null) {
                     return;
@@ -174,7 +188,7 @@ public class TableLogic {
                 }
             }
         });
-        table.pack();
+        table.layout();
     }
 
     /**
@@ -287,6 +301,13 @@ public class TableLogic {
          */
         public Map<Position, String> getOriginalText() {
             return source;
+        }
+
+        /**
+         * clear
+         */
+        public void clear() {
+            source.clear();
         }
     }
 
