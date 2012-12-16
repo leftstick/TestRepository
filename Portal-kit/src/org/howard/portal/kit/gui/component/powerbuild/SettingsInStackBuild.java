@@ -117,7 +117,9 @@ public class SettingsInStackBuild {
                 bSave.setEnabled(isChanged);
             }
         });
-
+        if (config.isConfigfilled()) {
+            tabSetting.resetData(config.convertConfig());
+        }
         ((StackLayout) stack.getLayout()).topControl = buildPage;
     }
 

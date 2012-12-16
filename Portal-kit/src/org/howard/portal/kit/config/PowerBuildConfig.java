@@ -1,9 +1,9 @@
 package org.howard.portal.kit.config;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Properties;
 
 import org.howard.portal.kit.util.PropertiesUtil;
 
@@ -12,8 +12,8 @@ import org.howard.portal.kit.util.PropertiesUtil;
  * build
  */
 public class PowerBuildConfig extends Observable {
-    private String designPath;
-    private String deployPath;
+    private String designPath = "";
+    private String deployPath = "";
     private static PowerBuildConfig config;
     private PropertiesUtil propUtil;
 
@@ -33,24 +33,12 @@ public class PowerBuildConfig extends Observable {
 
     private PowerBuildConfig() {
         propUtil = PropertiesUtil.getInstance();
-        Properties prop = propUtil.getProperties();
-        String designHome = null;
-        String deployHome = null;
-        if (prop.getProperty("designPath") == null && prop.getProperty("deployPath") == null) {
-            designHome = System.getenv("DESIGN_HOME");
-            deployHome = System.getenv("DEPLOY_HOME");
-            if (designHome != null)
-                designPath = designHome;
-            if (deployHome != null)
-                deployPath = deployHome;
-        } else {
-            designHome = prop.getProperty("designPath");
-            deployHome = prop.getProperty("deployPath");
-            if (designHome != null)
-                designPath = designHome;
-            if (deployHome != null)
-                deployPath = deployHome;
-        }
+        String designHome = propUtil.getProperty("designPath");
+        String deployHome = propUtil.getProperty("deployPath");
+        if (designHome != null)
+            designPath = designHome;
+        if (deployHome != null)
+            deployPath = deployHome;
     }
 
     /**
@@ -95,17 +83,49 @@ public class PowerBuildConfig extends Observable {
             if (!new File(result.get(0).get(1)).isDirectory())
                 throw new RuntimeException("Design Path should be a correct directory");
             config.setDesignPath(result.get(0).get(1));
+            propUtil.setProperty("designPath", config.getDesignPath());
         }
         if (config.getDeployPath() == null || !config.getDeployPath().equals(result.get(1).get(1))) {
             isReset = true;
             if (!new File(result.get(1).get(1)).isDirectory())
                 throw new RuntimeException("Deploy Path should be a correct directory");
             config.setDeployPath(result.get(1).get(1));
+            propUtil.setProperty("deployPath", config.getDeployPath());
         }
         if (isReset) {
+            propUtil.sync();
             super.setChanged();
             super.notifyObservers();
         }
         return isReset;
+    }
+
+    /**
+     * @return true if config filled. Otherwise false.
+     */
+    public boolean isConfigfilled() {
+        if (designPath != null && !"".equals(designPath))
+            return true;
+        if (deployPath != null && !"".equals(deployPath))
+            return true;
+        return false;
+    }
+
+    /**
+     * @return list of table
+     */
+    public List<List<String>> convertConfig() {
+        List<List<String>> list = new ArrayList<List<String>>();
+        List<String> row0 = new ArrayList<String>();
+        row0.add("Design Path");
+        row0.add(designPath);
+        List<String> row1 = new ArrayList<String>();
+        row1.add("Deploy Path");
+        row1.add(deployPath);
+        list.add(row0);
+        list.add(row1);
+        super.setChanged();
+        super.notifyObservers();
+        return list;
     }
 }
