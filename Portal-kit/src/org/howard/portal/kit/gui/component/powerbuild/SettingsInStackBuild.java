@@ -67,12 +67,7 @@ public class SettingsInStackBuild {
         Button bStart = CompositeFactory.createPushButton(cBuildBottom, "Start", new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Display.getDefault().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        exeList.startExec();
-                    }
-                });
+                exeList.startExec();
             }
         });
         Button bCheckBuild = CompositeFactory.createCheckButton(cBuildBottom, "Build", null);
@@ -119,6 +114,7 @@ public class SettingsInStackBuild {
         });
         if (config.isConfigfilled()) {
             tabSetting.resetData(config.convertConfig());
+            config.notifyObservers();
         }
         ((StackLayout) stack.getLayout()).topControl = buildPage;
     }

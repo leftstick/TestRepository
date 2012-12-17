@@ -94,8 +94,7 @@ public class PowerBuildConfig extends Observable {
         }
         if (isReset) {
             propUtil.sync();
-            super.setChanged();
-            super.notifyObservers();
+            this.notifyObservers();
         }
         return isReset;
     }
@@ -124,8 +123,12 @@ public class PowerBuildConfig extends Observable {
         row1.add(deployPath);
         list.add(row0);
         list.add(row1);
+        return list;
+    }
+
+    @Override
+    public void notifyObservers() {
         super.setChanged();
         super.notifyObservers();
-        return list;
     }
 }

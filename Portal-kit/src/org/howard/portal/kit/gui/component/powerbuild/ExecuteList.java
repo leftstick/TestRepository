@@ -14,8 +14,6 @@ import org.howard.portal.kit.util.ShellRunner;
 public class ExecuteList {
     private List<ExecuteItem> list;
 
-    private ShellRunner shell;
-
     private ExecutionCallback callback;
 
     /**
@@ -23,7 +21,6 @@ public class ExecuteList {
      */
     public ExecuteList() {
         list = new ArrayList<ExecuteItem>();
-        shell = new ShellRunner();
     }
 
     /**
@@ -100,13 +97,9 @@ public class ExecuteList {
             item.status = BuildStatus.EXECUTING;
             if (callback != null)
                 callback.onChanged(item);
+            ShellRunner shell = new ShellRunner();
             shell.setCmdline("mvn " + item.absolutePath);
             int run = shell.run();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             if (run == 0)
                 item.status = BuildStatus.COMPLETED;
             else

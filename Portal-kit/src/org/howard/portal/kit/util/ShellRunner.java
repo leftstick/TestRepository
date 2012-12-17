@@ -237,7 +237,7 @@ public class ShellRunner {
         @Override
         public void run() {
             BufferedInputStream stream = new BufferedInputStream(this.inputStream);
-            Reader reader = new InputStreamReader(stream,Charset.forName("GBK"));
+            Reader reader = new InputStreamReader(stream, Charset.forName("GBK"));
             BufferedReader reader2 = new BufferedReader(reader);
 
             String readSize = null;
